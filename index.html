@@ -59,6 +59,7 @@
             .btn-outline {
                 @apply border border-cs2-accent text-cs2-accent hover:bg-cs2-accent hover:text-white font-bold py-2 px-4 rounded transition-all duration-300;
             }
+            .input-item .input-field {margin-bottom: 4px;}
             .input-field {
                 @apply bg-dark border border-gray-700 text-light rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cs2-accent;
             }
@@ -200,11 +201,11 @@
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
                 <div class="glass-effect rounded-lg p-6">
                     <h3 class="text-lg font-semibold mb-4">收益趋势</h3>
-                    <div class="h-64">
+                    <div class="h-48 md:h-64">
                         <canvas id="profitChart"></canvas>
                     </div>
                 </div>
-                <div class="glass-effect rounded-lg p-6">
+                <div class="glass-effect rounded-lg p-6 hidden md:block">
                     <h3 class="text-lg font-semibold mb-4">合同类型分布</h3>
                     <div class="h-64">
                         <canvas id="contractTypeChart"></canvas>
@@ -214,20 +215,22 @@
 
             <!-- 合同列表 -->
             <div class="glass-effect rounded-lg overflow-hidden">
-                <div class="px-6 py-4 border-b border-gray-800 flex justify-between items-center">
-                    <h2 class="text-xl font-bold">合同列表</h2>
-                    <div class="flex items-center space-x-4">
-                        <div class="relative">
-                            <input type="text" id="searchInput" placeholder="搜索合同..." class="input-field pr-10">
-                            <i class="fa fa-search absolute right-3 top-3 text-gray-500"></i>
+                <div class="px-4 sm:px-6 py-4 border-b border-gray-800">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                        <h2 class="text-xl font-bold whitespace-nowrap">合同列表</h2>
+                        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 w-full sm:w-auto">
+                            <div class="relative w-full sm:w-auto">
+                                <input type="text" id="searchInput" placeholder="搜索合同..." class="input-field pr-10 w-full">
+                                <i class="fa fa-search absolute right-3 top-3 text-gray-500"></i>
+                            </div>
+                            <select id="filterSelect" class="input-field w-full sm:w-auto">
+                                <option value="all">全部合同</option>
+                                <option value="completed">已完成</option>
+                                <option value="cooling">冷却中</option>
+                                <option value="profitable">盈利</option>
+                                <option value="loss">亏损</option>
+                            </select>
                         </div>
-                        <select id="filterSelect" class="input-field">
-                            <option value="all">全部合同</option>
-                            <option value="completed">已完成</option>
-                            <option value="cooling">冷却中</option>
-                            <option value="profitable">盈利</option>
-                            <option value="loss">亏损</option>
-                        </select>
                     </div>
                 </div>
                 <div class="overflow-x-auto">
@@ -235,16 +238,16 @@
                         <thead class="bg-gray-900">
                             <tr>
                                 <th scope="col" class="table-header">ID</th>
-                                <th scope="col" class="table-header">合同类型</th>
+                                <th scope="col" class="table-header hidden md:table-cell">合同类型</th>
                                 <th scope="col" class="table-header">投入物品</th>
                                 <th scope="col" class="table-header">产出物品</th>
                                 <th scope="col" class="table-header">成本</th>
                                 <th scope="col" class="table-header">收益</th>
                                 <th scope="col" class="table-header">利润</th>
                                 <th scope="col" class="table-header">状态</th>
-                                <th scope="col" class="table-header">开始时间</th>
-                <th scope="col" class="table-header">预计完成时间</th>
-                                <th scope="col" class="table-header">冷却时间</th>
+                                <th scope="col" class="table-header hidden sm:table-cell">开始时间</th>
+                                <th scope="col" class="table-header hidden md:table-cell">预计完成时间</th>
+                                <th scope="col" class="table-header hidden sm:table-cell">冷却时间</th>
                                 <th scope="col" class="table-header">操作</th>
                             </tr>
                         </thead>
@@ -282,7 +285,7 @@
 
     <!-- 新增/编辑合同模态框 -->
     <div id="contractModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
-        <div class="glass-effect rounded-lg p-6 w-full max-w-4xl max-h-[90vh] overflow-y-auto scrollbar-thin scrollbar-thumb-cs2-accent scrollbar-track-gray-800 text-sm">
+        <div class="glass-effect rounded-lg p-4 sm:p-6 w-full max-w-4xl max-h-[90vh] overflow-y-auto scrollbar-thin scrollbar-thumb-cs2-accent scrollbar-track-gray-800 text-sm">
             <div class="flex justify-between items-center mb-6">
                 <h2 id="modalTitle" class="text-xl font-bold">新增合同</h2>
                 <button id="closeModalBtn" class="text-gray-400 hover:text-white">
@@ -291,7 +294,7 @@
             </div>
             <form id="contractForm">
                 <input type="hidden" id="contractId">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
                     <div>
                         <label for="contractType" class="block text-sm font-medium text-gray-400 mb-1">合同类型</label>
                         <select id="contractType" class="input-field w-full" required>
@@ -311,41 +314,43 @@
 
                 <div class="mb-6">
                     <label class="block text-sm font-medium text-gray-400 mb-1">投入物品</label>
-                    <div id="inputItemsContainer" class="space-y-3">
+                    <div id="inputItemsContainer" class="space-y-4">
                         <!-- 投入物品将通过JavaScript动态添加 -->
-                        <div class="input-item flex items-center space-x-3">
-                            <input type="text" class="input-field flex-1" placeholder="物品名称" required>
-                            <input type="number" class="input-field w-24" placeholder="数量" min="1" value="1" required>
-                            <input type="number" class="input-field w-24" placeholder="单价" step="0.01" min="0" required>
-                            <button type="button" class="remove-item-btn text-danger hover:text-red-400">
-                                <i class="fa fa-trash"></i>
-                            </button>
+                        <div class="input-item flex flex-col sm:flex-row items-stretch sm:items-center gap-4 sm:gap-3 p-4 bg-gray-900 bg-opacity-50 rounded-lg">
+                            <input type="text" class="input-field flex-1 mb-4 sm:mb-0" placeholder="物品名称" required>
+                            <div class="flex gap-2 sm:gap-3 w-full sm:w-auto">
+                                <input type="number" class="input-field w-full sm:w-24 mb-4 sm:mb-0" placeholder="数量" min="1" value="1" required>
+                                <input type="number" class="input-field w-full sm:w-24 mb-4 sm:mb-0" placeholder="单价" step="0.01" min="0" required>
+                                <button type="button" class="remove-item-btn text-danger hover:text-red-400 px-2 flex items-center justify-center">
+                                    <i class="fa fa-trash"></i>
+                                </button>
+                            </div>
                         </div>
                     </div>
-                    <button type="button" id="addInputItemBtn" class="btn-outline mt-3 py-1 px-3 text-sm">
+                    <button type="button" id="addInputItemBtn" class="btn-outline mt-3 py-1 px-3 text-sm w-full sm:w-auto">
                         <i class="fa fa-plus mr-1"></i> 添加物品
                     </button>
                 </div>
 
                 <div class="mb-6">
-                    <div class="flex items-center justify-between mb-1">
+                    <div class="flex items-center justify-between mb-1 flex-col sm:flex-row gap-2">
                         <label for="outputItem" class="block text-sm font-medium text-gray-400">产出物品</label>
                         <div class="flex items-center">
                             <input type="checkbox" id="noOutputItem" class="mr-2">
                             <label for="noOutputItem" class="text-sm text-gray-400">暂不添加产物</label>
                         </div>
                     </div>
-                    <div id="outputItemContainer" class="flex items-center space-x-3 flex-wrap bg-gray-900 bg-opacity-50 p-3 rounded-lg">
+                    <div id="outputItemContainer" class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 bg-gray-900 bg-opacity-50 p-3 rounded-lg">
                         <input type="text" id="outputItem" class="input-field flex-1" placeholder="物品名称" required>
-                        <select id="outputWear" class="input-field w-24" required>
+                        <select id="outputWear" class="input-field w-full sm:w-24" required>
                             <option value="factoryNew">崭新出厂</option>
                             <option value="minimalWear">略有磨损</option>
                             <option value="fieldTested" selected>久经沙场</option>
                             <option value="wellWorn">破损不堪</option>
                             <option value="battleScarred">战痕累累</option>
                         </select>
-                        <input type="number" id="outputWearValue" class="input-field w-32" placeholder="明细磨损" step="0.0000000000000001" min="0" max="1" title="输入具体的磨损值，例如: 0.2222221213132456">
-                        <input type="number" id="outputPrice" class="input-field w-24" placeholder="单价" step="0.01" min="0" required>
+                        <input type="number" id="outputWearValue" class="input-field w-full sm:w-32" placeholder="明细磨损" step="0.0000000000000001" min="0" max="1" title="输入具体的磨损值，例如: 0.2222221213132456">
+                        <input type="number" id="outputPrice" class="input-field w-full sm:w-24" placeholder="单价" step="0.01" min="0" required>
                     </div>
                 </div>
 
@@ -1007,7 +1012,7 @@
                 
                 row.innerHTML = `
                     <td class="table-cell">#${contract.id}</td>
-                    <td class="table-cell">${contractTypeText}</td>
+                    <td class="table-cell hidden md:table-cell">${contractTypeText}</td>
                     <td class="table-cell">${inputItemsDisplay}</td>
                     <td class="table-cell">
                         ${contract.outputItem.name ? 
@@ -1019,9 +1024,9 @@
                     <td class="table-cell">¥${contract.revenue.toFixed(2)}</td>
                     <td class="table-cell ${profitClass} font-bold">${profitSign}¥${contract.profit.toFixed(2)}</td>
                     <td class="table-cell">${statusText}</td>
-                    <td class="table-cell">${formattedDate}</td>
-                    <td class="table-cell">${formattedEndDate}</td>
-                    <td class="table-cell">${contract.coolingPeriod} 天</td>
+                    <td class="table-cell hidden sm:table-cell">${formattedDate}</td>
+                    <td class="table-cell hidden md:table-cell">${formattedEndDate}</td>
+                    <td class="table-cell hidden sm:table-cell">${contract.coolingPeriod} 天</td>
                     <td class="table-cell">
                         <div class="flex space-x-2">
                             <button class="edit-btn text-cs2-secondary hover:text-blue-400" data-id="${contract.id}">
