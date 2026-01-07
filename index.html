@@ -1,0 +1,1488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CS2 汰换合同追踪器</title>
+    <!-- Tailwind CSS v3 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+    <!-- Tailwind 配置 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#FF6B00',
+                        secondary: '#1E293B',
+                        dark: '#0F172A',
+                        light: '#F8FAFC',
+                        success: '#10B981',
+                        danger: '#EF4444',
+                        warning: '#F59E0B',
+                        info: '#3B82F6',
+                        'cs2-dark': '#1A1A1A',
+                        'cs2-light': '#CCCCCC',
+                        'cs2-accent': '#FF6B00',
+                        'cs2-secondary': '#0070F3'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'cs2': '0 4px 20px 0 rgba(255, 107, 0, 0.15)',
+                    },
+                    backgroundImage: {
+                        'cs2-pattern': "url('https://p3-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/472bcb79555a4e8ca7f2bd0a8cf29966~tplv-a9rns2rl98-image.image?lk3s=8e244e95&rcl=202601072310537D4589255994FFAD4CA8&rrcfp=f06b921b&x-expires=1770390692&x-signature=2UHKgAdBPYf2ncloyBdxDnUhpJQ%3D')",
+                    }
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .text-shadow {
+                text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+            }
+            .card-hover {
+                @apply transition-all duration-300 hover:shadow-cs2 hover:-translate-y-1;
+            }
+            .btn-primary {
+                @apply bg-cs2-accent hover:bg-opacity-90 text-white font-bold py-2 px-4 rounded transition-all duration-300;
+            }
+            .btn-secondary {
+                @apply bg-cs2-secondary hover:bg-opacity-90 text-white font-bold py-2 px-4 rounded transition-all duration-300;
+            }
+            .btn-outline {
+                @apply border border-cs2-accent text-cs2-accent hover:bg-cs2-accent hover:text-white font-bold py-2 px-4 rounded transition-all duration-300;
+            }
+            .input-field {
+                @apply bg-dark border border-gray-700 text-light rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cs2-accent;
+            }
+            .table-header {
+                @apply px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider;
+            }
+            .table-cell {
+                @apply px-6 py-4 whitespace-nowrap text-sm text-gray-300;
+            }
+            .badge {
+                @apply px-2 py-1 text-xs font-semibold rounded-full;
+            }
+            .badge-success {
+                @apply bg-success bg-opacity-20 text-success;
+            }
+            .badge-danger {
+                @apply bg-danger bg-opacity-20 text-danger;
+            }
+            .badge-warning {
+                @apply bg-warning bg-opacity-20 text-warning;
+            }
+            .glass-effect {
+                @apply bg-dark bg-opacity-80 backdrop-blur-md;
+            }
+            /* 自定义滚动条样式 */
+            .scrollbar-thin {
+                scrollbar-width: thin;
+            }
+            .scrollbar-thumb-cs2-accent {
+                scrollbar-color: #FF6B00 #1A1A1A;
+            }
+            .scrollbar-thin::-webkit-scrollbar {
+                width: 8px;
+            }
+            .scrollbar-thin::-webkit-scrollbar-track {
+                background: #1A1A1A;
+                border-radius: 4px;
+            }
+            .scrollbar-thin::-webkit-scrollbar-thumb {
+                background-color: #FF6B00;
+                border-radius: 4px;
+                border: 2px solid #1A1A1A;
+            }
+        }
+    </style>
+</head>
+<body class="bg-cs2-dark text-light min-h-screen">
+    <!-- 背景图 -->
+    <div class="fixed inset-0 bg-cs2-pattern bg-cover bg-center opacity-10 z-0"></div>
+    
+    <!-- 主容器 -->
+    <div class="relative z-10">
+        <!-- 顶部导航 -->
+        <header class="glass-effect sticky top-0 z-50 border-b border-gray-800">
+            <div class="container mx-auto px-4 py-4 flex flex-col md:flex-row justify-between items-center">
+                <div class="flex items-center mb-4 md:mb-0">
+                    <img src="https://p3-doubao-search-sign.byteimg.com/labis/d29e4f139050167675ead6ec181ea8cf~tplv-be4g95zd3a-image.jpeg?lk3s=feb11e32&x-expires=1783350666&x-signature=AI%2FjPniIj8kQzZVZ6ipFUBR9iVA%3D" alt="CS2 Logo" class="h-10 w-auto mr-3">
+                    <h1 class="text-2xl font-bold text-cs2-accent">CS2 汰换合同追踪器</h1>
+                </div>
+                <div class="flex space-x-4">
+                    <button id="addContractBtn" class="btn-primary flex items-center">
+                        <i class="fa fa-plus mr-2"></i> 新增合同
+                    </button>
+                    <div class="relative" id="settingsDropdown">
+                        <button class="btn-secondary flex items-center" id="settingsButton">
+                            <i class="fa fa-cog mr-2"></i> 设置
+                            <i class="fa fa-caret-down ml-2"></i>
+                        </button>
+                        <div class="absolute right-0 mt-2 w-48 glass-effect rounded-md shadow-lg overflow-hidden z-50 hidden" id="settingsMenu">
+                            <div class="py-1">
+                                <button id="exportDataBtn" class="block w-full text-left px-4 py-2 hover:bg-gray-800">
+                                    <i class="fa fa-download mr-2"></i> 导出数据
+                                </button>
+                                <button id="importDataBtn" class="block w-full text-left px-4 py-2 hover:bg-gray-800">
+                                    <i class="fa fa-upload mr-2"></i> 导入数据
+                                </button>
+                                <input type="file" id="importFileInput" accept=".json" class="hidden">
+                                <button id="clearDataBtn" class="block w-full text-left px-4 py-2 hover:bg-gray-800 text-danger">
+                                    <i class="fa fa-trash mr-2"></i> 清除数据
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- 主内容区 -->
+        <main class="container mx-auto px-4 py-8">
+            <!-- 统计卡片 -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="glass-effect rounded-lg p-6 card-hover">
+                    <div class="flex items-center">
+                        <div class="p-3 rounded-full bg-cs2-accent bg-opacity-20 text-cs2-accent">
+                            <i class="fa fa-file-text-o text-2xl"></i>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-gray-400 text-sm">总合同数</p>
+                            <p id="totalContracts" class="text-2xl font-bold">0</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="glass-effect rounded-lg p-6 card-hover">
+                    <div class="flex items-center">
+                        <div class="p-3 rounded-full bg-success bg-opacity-20 text-success">
+                            <i class="fa fa-money text-2xl"></i>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-gray-400 text-sm">总收益</p>
+                            <p id="totalProfit" class="text-2xl font-bold">¥0.00</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="glass-effect rounded-lg p-6 card-hover">
+                    <div class="flex items-center">
+                        <div class="p-3 rounded-full bg-warning bg-opacity-20 text-warning">
+                            <i class="fa fa-clock-o text-2xl"></i>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-gray-400 text-sm">冷却中合同</p>
+                            <p id="coolingContracts" class="text-2xl font-bold">0</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="glass-effect rounded-lg p-6 card-hover">
+                    <div class="flex items-center">
+                        <div class="p-3 rounded-full bg-info bg-opacity-20 text-info">
+                            <i class="fa fa-line-chart text-2xl"></i>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-gray-400 text-sm">成功率</p>
+                            <p id="successRate" class="text-2xl font-bold">0%</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 图表区域 -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                <div class="glass-effect rounded-lg p-6">
+                    <h3 class="text-lg font-semibold mb-4">收益趋势</h3>
+                    <div class="h-64">
+                        <canvas id="profitChart"></canvas>
+                    </div>
+                </div>
+                <div class="glass-effect rounded-lg p-6">
+                    <h3 class="text-lg font-semibold mb-4">合同类型分布</h3>
+                    <div class="h-64">
+                        <canvas id="contractTypeChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 合同列表 -->
+            <div class="glass-effect rounded-lg overflow-hidden">
+                <div class="px-6 py-4 border-b border-gray-800 flex justify-between items-center">
+                    <h2 class="text-xl font-bold">合同列表</h2>
+                    <div class="flex items-center space-x-4">
+                        <div class="relative">
+                            <input type="text" id="searchInput" placeholder="搜索合同..." class="input-field pr-10">
+                            <i class="fa fa-search absolute right-3 top-3 text-gray-500"></i>
+                        </div>
+                        <select id="filterSelect" class="input-field">
+                            <option value="all">全部合同</option>
+                            <option value="completed">已完成</option>
+                            <option value="cooling">冷却中</option>
+                            <option value="profitable">盈利</option>
+                            <option value="loss">亏损</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-800">
+                        <thead class="bg-gray-900">
+                            <tr>
+                                <th scope="col" class="table-header">ID</th>
+                                <th scope="col" class="table-header">合同类型</th>
+                                <th scope="col" class="table-header">投入物品</th>
+                                <th scope="col" class="table-header">产出物品</th>
+                                <th scope="col" class="table-header">成本</th>
+                                <th scope="col" class="table-header">收益</th>
+                                <th scope="col" class="table-header">利润</th>
+                                <th scope="col" class="table-header">状态</th>
+                                <th scope="col" class="table-header">开始时间</th>
+                <th scope="col" class="table-header">预计完成时间</th>
+                                <th scope="col" class="table-header">冷却时间</th>
+                                <th scope="col" class="table-header">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="contractTableBody" class="bg-dark divide-y divide-gray-800">
+                            <!-- 合同数据将通过JavaScript动态填充 -->
+                            <tr>
+                                <td colspan="12" class="table-cell text-center">暂无合同数据，请添加新合同</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div id="pagination" class="px-6 py-4 border-t border-gray-800 flex justify-between items-center">
+                    <div class="text-sm text-gray-400">
+                        显示 <span id="showingRange">0-0</span> 条，共 <span id="totalItems">0</span> 条
+                    </div>
+                    <div class="flex space-x-2">
+                        <button id="prevPageBtn" class="btn-outline py-1 px-3 disabled:opacity-50 disabled:cursor-not-allowed">
+                            <i class="fa fa-chevron-left"></i>
+                        </button>
+                        <button id="nextPageBtn" class="btn-outline py-1 px-3 disabled:opacity-50 disabled:cursor-not-allowed">
+                            <i class="fa fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- 页脚 -->
+        <footer class="glass-effect border-t border-gray-800 py-6">
+            <div class="container mx-auto px-4 text-center text-gray-500 text-sm">
+                <p>CS2 汰换合同追踪器 &copy; 2026 | 仅供游戏辅助使用</p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- 新增/编辑合同模态框 -->
+    <div id="contractModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
+        <div class="glass-effect rounded-lg p-6 w-full max-w-4xl max-h-[90vh] overflow-y-auto scrollbar-thin scrollbar-thumb-cs2-accent scrollbar-track-gray-800 text-sm">
+            <div class="flex justify-between items-center mb-6">
+                <h2 id="modalTitle" class="text-xl font-bold">新增合同</h2>
+                <button id="closeModalBtn" class="text-gray-400 hover:text-white">
+                    <i class="fa fa-times text-xl"></i>
+                </button>
+            </div>
+            <form id="contractForm">
+                <input type="hidden" id="contractId">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div>
+                        <label for="contractType" class="block text-sm font-medium text-gray-400 mb-1">合同类型</label>
+                        <select id="contractType" class="input-field w-full" required>
+                            <option value="tenToOne">十合一</option>
+                            <option value="fiveToOne">五合一</option>
+                            <option value="other">其他</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="status" class="block text-sm font-medium text-gray-400 mb-1">状态</label>
+                        <select id="status" class="input-field w-full" required>
+                            <option value="completed">已完成</option>
+                            <option value="cooling">冷却中</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-400 mb-1">投入物品</label>
+                    <div id="inputItemsContainer" class="space-y-3">
+                        <!-- 投入物品将通过JavaScript动态添加 -->
+                        <div class="input-item flex items-center space-x-3">
+                            <input type="text" class="input-field flex-1" placeholder="物品名称" required>
+                            <input type="number" class="input-field w-24" placeholder="数量" min="1" value="1" required>
+                            <input type="number" class="input-field w-24" placeholder="单价" step="0.01" min="0" required>
+                            <button type="button" class="remove-item-btn text-danger hover:text-red-400">
+                                <i class="fa fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <button type="button" id="addInputItemBtn" class="btn-outline mt-3 py-1 px-3 text-sm">
+                        <i class="fa fa-plus mr-1"></i> 添加物品
+                    </button>
+                </div>
+
+                <div class="mb-6">
+                    <div class="flex items-center justify-between mb-1">
+                        <label for="outputItem" class="block text-sm font-medium text-gray-400">产出物品</label>
+                        <div class="flex items-center">
+                            <input type="checkbox" id="noOutputItem" class="mr-2">
+                            <label for="noOutputItem" class="text-sm text-gray-400">暂不添加产物</label>
+                        </div>
+                    </div>
+                    <div id="outputItemContainer" class="flex items-center space-x-3 flex-wrap bg-gray-900 bg-opacity-50 p-3 rounded-lg">
+                        <input type="text" id="outputItem" class="input-field flex-1" placeholder="物品名称" required>
+                        <select id="outputWear" class="input-field w-24" required>
+                            <option value="factoryNew">崭新出厂</option>
+                            <option value="minimalWear">略有磨损</option>
+                            <option value="fieldTested" selected>久经沙场</option>
+                            <option value="wellWorn">破损不堪</option>
+                            <option value="battleScarred">战痕累累</option>
+                        </select>
+                        <input type="number" id="outputWearValue" class="input-field w-32" placeholder="明细磨损" step="0.0000000000000001" min="0" max="1" title="输入具体的磨损值，例如: 0.2222221213132456">
+                        <input type="number" id="outputPrice" class="input-field w-24" placeholder="单价" step="0.01" min="0" required>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div>
+                        <label for="completionDate" class="block text-sm font-medium text-gray-400 mb-1">合同开始时间 (可选，默认为当前时间)</label>
+                        <input type="datetime-local" id="completionDate" class="input-field w-full">
+                    </div>
+                    <div>
+                        <label for="coolingPeriod" class="block text-sm font-medium text-gray-400 mb-1">冷却时间 (天)</label>
+                        <input type="number" id="coolingPeriod" class="input-field w-full" min="0" value="7">
+                    </div>
+                </div>
+
+                <div class="mb-6">
+                    <label for="notes" class="block text-sm font-medium text-gray-400 mb-1">备注</label>
+                    <textarea id="notes" class="input-field w-full" rows="3" placeholder="添加备注..."></textarea>
+                </div>
+
+                <div class="flex justify-end space-x-4">
+                    <button type="button" id="cancelBtn" class="btn-outline">取消</button>
+                    <button type="submit" class="btn-primary">保存合同</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 确认对话框 -->
+    <div id="confirmDialog" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
+        <div class="glass-effect rounded-lg p-6 w-full max-w-md">
+            <h3 id="confirmTitle" class="text-xl font-bold mb-4">确认操作</h3>
+            <p id="confirmMessage" class="mb-6">您确定要执行此操作吗？</p>
+            <div class="flex justify-end space-x-4">
+                <button id="confirmCancelBtn" class="btn-outline">取消</button>
+                <button id="confirmOkBtn" class="btn-primary">确认</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 通知提示 -->
+    <div id="notification" class="fixed top-4 right-4 z-50 glass-effect rounded-lg p-4 shadow-lg transform translate-x-full transition-transform duration-300 max-w-sm">
+        <div class="flex items-start">
+            <div id="notificationIcon" class="mr-3 text-lg"></div>
+            <div class="flex-1">
+                <h4 id="notificationTitle" class="font-bold"></h4>
+                <p id="notificationMessage" class="text-sm text-gray-400"></p>
+            </div>
+            <button id="closeNotificationBtn" class="text-gray-400 hover:text-white ml-4">
+                <i class="fa fa-times"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        // 全局变量
+        let db;
+        let contracts = [];
+        let filteredContracts = [];
+        let currentPage = 1;
+        const itemsPerPage = 10;
+        let currentContractId = null;
+        let currentConfirmAction = null;
+        let profitChart = null;
+        let contractTypeChart = null;
+
+        // DOM 加载完成后初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            initDatabase();
+            setupEventListeners();
+            updateStatistics();
+            initCharts();
+            
+            // 设置默认日期时间为当前时间
+            const now = new Date();
+            const dateTimeString = now.toISOString().slice(0, 16);
+            document.getElementById('completionDate').value = dateTimeString;
+        });
+
+        // 初始化 IndexedDB
+        function initDatabase() {
+            const request = indexedDB.open('CS2ContractTracker', 1);
+
+            request.onerror = (event) => {
+                showNotification('错误', '无法打开数据库', 'error');
+                console.error('数据库打开失败:', event.target.error);
+            };
+
+            request.onupgradeneeded = (event) => {
+                db = event.target.result;
+                
+                // 创建合同对象存储
+                const contractStore = db.createObjectStore('contracts', { keyPath: 'id', autoIncrement: true });
+                
+                // 创建索引
+                contractStore.createIndex('by_completion_date', 'completionDate', { unique: false });
+                contractStore.createIndex('by_status', 'status', { unique: false });
+                contractStore.createIndex('by_profit', 'profit', { unique: false });
+                
+                console.log('数据库升级完成');
+            };
+
+            request.onsuccess = (event) => {
+                db = event.target.result;
+                console.log('数据库连接成功');
+                loadContracts();
+            };
+        }
+
+        // 加载合同数据
+        function loadContracts() {
+            const transaction = db.transaction(['contracts'], 'readonly');
+            const store = transaction.objectStore('contracts');
+            const request = store.getAll();
+
+            request.onsuccess = (event) => {
+                contracts = event.target.result;
+                
+                // 按完成时间降序排序
+                contracts.sort((a, b) => new Date(b.completionDate) - new Date(a.completionDate));
+                
+                filterAndDisplayContracts();
+                updateStatistics();
+                updateCharts();
+            };
+
+            request.onerror = (event) => {
+                showNotification('错误', '加载合同数据失败', 'error');
+                console.error('加载合同数据失败:', event.target.error);
+            };
+        }
+
+        // 设置事件监听器
+        function setupEventListeners() {
+            // 模态框相关
+            document.getElementById('addContractBtn').addEventListener('click', () => {
+                openContractModal();
+            });
+
+            document.getElementById('closeModalBtn').addEventListener('click', () => {
+                closeContractModal();
+            });
+
+            document.getElementById('cancelBtn').addEventListener('click', () => {
+                closeContractModal();
+            });
+
+            // 表单提交
+            document.getElementById('contractForm').addEventListener('submit', (event) => {
+                event.preventDefault();
+                saveContract();
+            });
+
+            // 添加投入物品
+            document.getElementById('addInputItemBtn').addEventListener('click', () => {
+                addInputItem();
+            });
+
+            // 状态变更时显示/隐藏冷却时间
+            document.getElementById('status').addEventListener('change', (event) => {
+                const coolingPeriodInput = document.getElementById('coolingPeriod');
+                if (event.target.value === 'cooling') {
+                    coolingPeriodInput.required = true;
+                    coolingPeriodInput.parentElement.classList.remove('hidden');
+                } else {
+                    coolingPeriodInput.required = false;
+                }
+            });
+
+            // 暂不添加产物选项
+            document.getElementById('noOutputItem').addEventListener('change', (event) => {
+                const outputContainer = document.getElementById('outputItemContainer');
+                const outputInputs = outputContainer.querySelectorAll('input, select');
+                
+                outputInputs.forEach(input => {
+                    input.required = !event.target.checked;
+                    input.disabled = event.target.checked;
+                });
+            });
+
+            // 搜索和筛选
+            document.getElementById('searchInput').addEventListener('input', () => {
+                filterAndDisplayContracts();
+            });
+
+            document.getElementById('filterSelect').addEventListener('change', () => {
+                filterAndDisplayContracts();
+            });
+
+            // 分页
+            document.getElementById('prevPageBtn').addEventListener('click', () => {
+                if (currentPage > 1) {
+                    currentPage--;
+                    displayContracts();
+                }
+            });
+
+            document.getElementById('nextPageBtn').addEventListener('click', () => {
+                if (currentPage < getTotalPages()) {
+                    currentPage++;
+                    displayContracts();
+                }
+            });
+
+            // 设置菜单交互
+            const settingsButton = document.getElementById('settingsButton');
+            const settingsMenu = document.getElementById('settingsMenu');
+            const settingsDropdown = document.getElementById('settingsDropdown');
+            
+            // 点击设置按钮切换菜单显示状态
+            settingsButton.addEventListener('click', (event) => {
+                event.stopPropagation();
+                settingsMenu.classList.toggle('hidden');
+            });
+            
+            // 点击菜单项时不关闭菜单
+            settingsMenu.addEventListener('click', (event) => {
+                event.stopPropagation();
+            });
+            
+            // 点击页面其他地方关闭菜单
+            document.addEventListener('click', () => {
+                settingsMenu.classList.add('hidden');
+            });
+            
+            // 数据导入导出
+            document.getElementById('exportDataBtn').addEventListener('click', () => {
+                exportData();
+                settingsMenu.classList.add('hidden'); // 执行操作后关闭菜单
+            });
+
+            document.getElementById('importDataBtn').addEventListener('click', () => {
+                document.getElementById('importFileInput').click();
+                settingsMenu.classList.add('hidden'); // 执行操作后关闭菜单
+            });
+
+            document.getElementById('importFileInput').addEventListener('change', (event) => {
+                importData(event.target.files[0]);
+            });
+
+            document.getElementById('clearDataBtn').addEventListener('click', () => {
+                showConfirmDialog('清除数据', '您确定要清除所有合同数据吗？此操作不可撤销。', 'clearData');
+                settingsMenu.classList.add('hidden'); // 执行操作后关闭菜单
+            });
+
+            // 确认对话框
+            document.getElementById('confirmCancelBtn').addEventListener('click', () => {
+                closeConfirmDialog();
+            });
+
+            document.getElementById('confirmOkBtn').addEventListener('click', () => {
+                executeConfirmAction();
+            });
+
+            // 通知关闭
+            document.getElementById('closeNotificationBtn').addEventListener('click', () => {
+                closeNotification();
+            });
+        }
+
+        // 打开合同模态框
+        function openContractModal(contractId = null) {
+            currentContractId = contractId;
+            const modal = document.getElementById('contractModal');
+            const title = document.getElementById('modalTitle');
+            const form = document.getElementById('contractForm');
+            
+            // 重置表单
+            form.reset();
+            
+            // 清空投入物品容器，保留一个空项
+            const container = document.getElementById('inputItemsContainer');
+            container.innerHTML = '';
+            addInputItem();
+            
+            // 设置默认日期时间为当前时间
+            const now = new Date();
+            const dateTimeString = now.toISOString().slice(0, 16);
+            document.getElementById('completionDate').value = dateTimeString;
+            
+            if (contractId) {
+                // 编辑模式
+                title.textContent = '编辑合同';
+                const contract = contracts.find(c => c.id === parseInt(contractId));
+                
+                if (contract) {
+                    document.getElementById('contractId').value = contract.id;
+                    document.getElementById('contractType').value = contract.contractType;
+                    document.getElementById('status').value = contract.status;
+                    
+                    // 填充投入物品
+                    container.innerHTML = '';
+                    contract.inputItems.forEach(item => {
+                        addInputItem(
+                            item.name || '', 
+                            item.price ? item.price.toString() : '0', 
+                            item.wear || 'fieldTested', 
+                            item.wearValue !== null && item.wearValue !== undefined ? item.wearValue.toString() : ''
+                        );
+                    });
+                    // 更新物品序号
+                    updateItemIndices();
+                    
+                    // 更新冷却时间显示状态
+                    const statusSelect = document.getElementById('status');
+                    const coolingPeriodInput = document.getElementById('coolingPeriod');
+                    if (statusSelect.value === 'cooling') {
+                        coolingPeriodInput.required = true;
+                    } else {
+                        coolingPeriodInput.required = false;
+                    }
+                    
+                    // 填充产出物品
+                    const noOutputItem = contract.outputItem.name === '' && contract.outputItem.price === 0;
+                    document.getElementById('noOutputItem').checked = noOutputItem;
+                    
+                    // 更新产出物品容器状态
+                    const outputContainer = document.getElementById('outputItemContainer');
+                    const outputInputs = outputContainer.querySelectorAll('input, select');
+                    outputInputs.forEach(input => {
+                        input.required = !noOutputItem;
+                        input.disabled = noOutputItem;
+                    });
+                    
+                    document.getElementById('outputItem').value = contract.outputItem.name || '';
+                    document.getElementById('outputWear').value = contract.outputItem.wear || 'fieldTested';
+                    document.getElementById('outputWearValue').value = contract.outputItem.wearValue || '';
+                    document.getElementById('outputPrice').value = contract.outputItem.price || 0;
+                    
+                    // 填充日期和冷却时间
+                    const completionDate = new Date(contract.completionDate);
+                    const dateTimeString = completionDate.toISOString().slice(0, 16);
+                    document.getElementById('completionDate').value = dateTimeString;
+                    document.getElementById('coolingPeriod').value = contract.coolingPeriod || 7;
+                    
+                    // 填充备注
+                    document.getElementById('notes').value = contract.notes || '';
+                }
+            } else {
+                // 新增模式
+                title.textContent = '新增合同';
+                document.getElementById('contractId').value = '';
+            }
+            
+            modal.classList.remove('hidden');
+        }
+
+        // 关闭合同模态框
+        function closeContractModal() {
+            document.getElementById('contractModal').classList.add('hidden');
+            currentContractId = null;
+        }
+
+        // 添加投入物品
+        function addInputItem(name = '', price = 0, wear = 'fieldTested', wearValue = '') {
+            const container = document.getElementById('inputItemsContainer');
+            const itemDiv = document.createElement('div');
+            const itemIndex = container.children.length + 1; // 获取当前物品的序号
+            
+            itemDiv.className = 'input-item flex items-center space-x-3 flex-wrap mb-3 p-3 bg-gray-900 bg-opacity-50 rounded-lg';
+            
+            itemDiv.innerHTML = `
+                <div class="w-8 h-8 flex items-center justify-center bg-cs2-accent text-white rounded-full font-bold">${itemIndex}</div>
+                <input type="text" class="input-field flex-1" placeholder="物品名称" value="${name}" required>
+                <select class="input-field w-24 wear-select" required>
+                    <option value="factoryNew" ${wear === 'factoryNew' ? 'selected' : ''}>崭新出厂</option>
+                    <option value="minimalWear" ${wear === 'minimalWear' ? 'selected' : ''}>略有磨损</option>
+                    <option value="fieldTested" ${wear === 'fieldTested' ? 'selected' : ''}>久经沙场</option>
+                    <option value="wellWorn" ${wear === 'wellWorn' ? 'selected' : ''}>破损不堪</option>
+                    <option value="battleScarred" ${wear === 'battleScarred' ? 'selected' : ''}>战痕累累</option>
+                </select>
+                <input type="number" class="input-field w-32 wear-value" placeholder="明细磨损" step="0.0000000000000001" min="0" max="1" value="${wearValue}" title="输入具体的磨损值，例如: 0.2222221213132456">
+                <input type="number" class="input-field w-24" placeholder="单价" step="0.01" min="0" value="${price}" required>
+                <div>
+                    <button type="button" class="copy-item-btn text-cs2-secondary hover:text-blue-400 mr-2" title="复制物品">
+                        <i class="fa fa-copy"></i>
+                    </button>
+                    <button type="button" class="remove-item-btn text-danger hover:text-red-400" title="删除物品">
+                        <i class="fa fa-trash"></i>
+                    </button>
+                </div>
+            `;
+            
+            // 添加删除按钮事件
+            const removeBtn = itemDiv.querySelector('.remove-item-btn');
+            removeBtn.addEventListener('click', () => {
+                if (container.children.length > 1) {
+                    itemDiv.remove();
+                    // 更新剩余物品的序号
+                    updateItemIndices();
+                } else {
+                    showNotification('提示', '至少需要一个投入物品', 'warning');
+                }
+            });
+            
+            // 添加复制按钮事件
+            const copyBtn = itemDiv.querySelector('.copy-item-btn');
+            copyBtn.addEventListener('click', () => {
+                const inputs = itemDiv.querySelectorAll('input');
+                const select = itemDiv.querySelector('select');
+                const name = inputs[0].value;
+                const wearValue = inputs[1].value;
+                const price = parseFloat(inputs[2].value);
+                const wear = select.value;
+                
+                addInputItem(name, price, wear, wearValue);
+                showNotification('成功', '物品已复制', 'success');
+            });
+            
+            container.appendChild(itemDiv);
+        }
+        
+        // 更新物品序号
+        function updateItemIndices() {
+            const container = document.getElementById('inputItemsContainer');
+            const items = container.querySelectorAll('.input-item');
+            
+            items.forEach((item, index) => {
+                const indexDiv = item.querySelector('.w-8.h-8');
+                if (indexDiv) {
+                    indexDiv.textContent = index + 1;
+                }
+            });
+        }
+
+        // 保存合同
+        function saveContract() {
+            const form = document.getElementById('contractForm');
+            
+            // 验证表单
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+            
+            // 收集投入物品数据
+            const inputItems = [];
+            const inputItemDivs = document.querySelectorAll('.input-item');
+            
+            inputItemDivs.forEach(div => {
+                const inputs = div.querySelectorAll('input');
+                const select = div.querySelector('.wear-select');
+                inputItems.push({
+                    name: inputs[0].value.trim(),
+                    wear: select.value,
+                    wearValue: inputs[1].value ? parseFloat(inputs[1].value) : null,
+                    price: parseFloat(inputs[2].value)
+                });
+            });
+            
+            // 计算成本
+            const cost = inputItems.reduce((total, item) => total + item.price, 0);
+            
+            // 检查是否暂不添加产物
+            const noOutputItem = document.getElementById('noOutputItem').checked;
+            let outputItem = {};
+            let revenue = 0;
+            
+            if (noOutputItem) {
+                // 暂不添加产物
+                outputItem = {
+                    name: '',
+                    wear: 'fieldTested',
+                    wearValue: null,
+                    price: 0
+                };
+                revenue = 0;
+            } else {
+                // 收集产出物品数据
+                outputItem = {
+                    name: document.getElementById('outputItem').value.trim(),
+                    wear: document.getElementById('outputWear').value,
+                    wearValue: document.getElementById('outputWearValue').value ? parseFloat(document.getElementById('outputWearValue').value) : null,
+                    price: parseFloat(document.getElementById('outputPrice').value)
+                };
+                revenue = outputItem.price;
+            }
+            
+            // 计算利润
+            const profit = revenue - cost;
+            
+            // 创建合同对象
+            const contract = {
+                contractType: document.getElementById('contractType').value,
+                inputItems,
+                outputItem,
+                cost,
+                revenue,
+                profit,
+                status: document.getElementById('status').value,
+                completionDate: document.getElementById('completionDate').value ? new Date(document.getElementById('completionDate').value).toISOString() : new Date().toISOString(),
+                coolingPeriod: parseInt(document.getElementById('coolingPeriod').value) || 7,
+                notes: document.getElementById('notes').value.trim()
+            };
+            
+            // 保存到数据库
+            const transaction = db.transaction(['contracts'], 'readwrite');
+            const store = transaction.objectStore('contracts');
+            let request;
+            
+            if (currentContractId) {
+                // 更新现有合同
+                contract.id = parseInt(currentContractId);
+                request = store.put(contract);
+            } else {
+                // 添加新合同
+                request = store.add(contract);
+            }
+            
+            request.onsuccess = () => {
+                closeContractModal();
+                showNotification('成功', currentContractId ? '合同更新成功' : '合同添加成功', 'success');
+                loadContracts();
+            };
+            
+            request.onerror = (event) => {
+                showNotification('错误', '保存合同失败', 'error');
+                console.error('保存合同失败:', event.target.error);
+            };
+        }
+
+        // 删除合同
+        function deleteContract(contractId) {
+            const transaction = db.transaction(['contracts'], 'readwrite');
+            const store = transaction.objectStore('contracts');
+            const request = store.delete(contractId);
+            
+            request.onsuccess = () => {
+                showNotification('成功', '合同已删除', 'success');
+                loadContracts();
+            };
+            
+            request.onerror = (event) => {
+                showNotification('错误', '删除合同失败', 'error');
+                console.error('删除合同失败:', event.target.error);
+            };
+        }
+
+        // 筛选和显示合同
+        function filterAndDisplayContracts() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
+            const filterValue = document.getElementById('filterSelect').value;
+            
+            filteredContracts = contracts.filter(contract => {
+                // 搜索筛选
+                const matchesSearch = !searchTerm || 
+                    contract.inputItems.some(item => item.name.toLowerCase().includes(searchTerm)) ||
+                    contract.outputItem.name.toLowerCase().includes(searchTerm) ||
+                    (contract.notes && contract.notes.toLowerCase().includes(searchTerm));
+                
+                // 状态筛选
+                let matchesFilter = true;
+                
+                if (filterValue === 'completed') {
+                    matchesFilter = contract.status === 'completed';
+                } else if (filterValue === 'cooling') {
+                    matchesFilter = contract.status === 'cooling' && isContractCooling(contract);
+                } else if (filterValue === 'profitable') {
+                    matchesFilter = contract.profit > 0;
+                } else if (filterValue === 'loss') {
+                    matchesFilter = contract.profit < 0;
+                }
+                
+                return matchesSearch && matchesFilter;
+            });
+            
+            currentPage = 1;
+            displayContracts();
+        }
+
+        // 显示合同列表
+        function displayContracts() {
+            const tableBody = document.getElementById('contractTableBody');
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const pageContracts = filteredContracts.slice(startIndex, endIndex);
+            
+            // 更新分页信息
+            document.getElementById('showingRange').textContent = `${startIndex + 1}-${Math.min(endIndex, filteredContracts.length)}`;
+            document.getElementById('totalItems').textContent = filteredContracts.length;
+            
+            // 更新分页按钮状态
+            document.getElementById('prevPageBtn').disabled = currentPage === 1;
+            document.getElementById('nextPageBtn').disabled = currentPage === getTotalPages();
+            
+            // 清空表格
+            tableBody.innerHTML = '';
+            
+            if (pageContracts.length === 0) {
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="12" class="table-cell text-center">暂无合同数据</td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            // 填充表格
+            pageContracts.forEach(contract => {
+                const row = document.createElement('tr');
+                row.className = 'hover:bg-gray-900';
+                
+                // 格式化日期
+                const completionDate = new Date(contract.completionDate);
+                const formattedDate = completionDate.toLocaleString('zh-CN', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+                
+                // 计算并格式化预计完成时间
+                const endDate = new Date(completionDate.getTime() + (contract.coolingPeriod * 24 * 60 * 60 * 1000));
+                const formattedEndDate = endDate.toLocaleString('zh-CN', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+                
+                // 计算冷却剩余时间
+                const coolingRemaining = getCoolingRemaining(contract);
+                const coolingStatus = coolingRemaining > 0 ? 
+                    `<span class="badge badge-warning">剩余 ${coolingRemaining} 天</span>` : 
+                    `<span class="badge badge-success">已就绪</span>`;
+                
+                // 合同类型显示文本
+                const contractTypeText = {
+                    'tenToOne': '十合一',
+                    'fiveToOne': '五合一',
+                    'other': '其他'
+                }[contract.contractType] || '其他';
+                
+                // 状态显示文本
+                const statusText = contract.status === 'completed' ? 
+                    '<span class="badge badge-success">已完成</span>' : 
+                    coolingStatus;
+                
+                // 利润显示样式
+                const profitClass = contract.profit > 0 ? 'text-success' : contract.profit < 0 ? 'text-danger' : 'text-gray-400';
+                const profitSign = contract.profit > 0 ? '+' : '';
+                
+                // 投入物品显示（最多显示3个，其余用省略号）
+                let inputItemsDisplay = '';
+                if (contract.inputItems.length <= 3) {
+                    inputItemsDisplay = contract.inputItems.map(item => {
+                        const wearText = item.wearValue ? `${getWearText(item.wear)} ${item.wearValue}` : getWearText(item.wear);
+                        return `${item.name} (${wearText} ¥${item.price.toFixed(2)})`;
+                    }).join('<br>');
+                } else {
+                    inputItemsDisplay = contract.inputItems.slice(0, 3).map(item => {
+                        const wearText = item.wearValue ? `${getWearText(item.wear)} ${item.wearValue}` : getWearText(item.wear);
+                        return `${item.name} (${wearText} ¥${item.price.toFixed(2)})`;
+                    }).join('<br>');
+                    inputItemsDisplay += `<br>...等${contract.inputItems.length - 3}项`;
+                }
+                
+                row.innerHTML = `
+                    <td class="table-cell">#${contract.id}</td>
+                    <td class="table-cell">${contractTypeText}</td>
+                    <td class="table-cell">${inputItemsDisplay}</td>
+                    <td class="table-cell">
+                        ${contract.outputItem.name ? 
+                            `${contract.outputItem.name} (${contract.outputItem.wearValue ? `${getWearText(contract.outputItem.wear)} ${contract.outputItem.wearValue}` : getWearText(contract.outputItem.wear)} ¥${contract.outputItem.price.toFixed(2)})` : 
+                            '<span class="text-gray-500">暂未添加</span>'
+                        }
+                    </td>
+                    <td class="table-cell">¥${contract.cost.toFixed(2)}</td>
+                    <td class="table-cell">¥${contract.revenue.toFixed(2)}</td>
+                    <td class="table-cell ${profitClass} font-bold">${profitSign}¥${contract.profit.toFixed(2)}</td>
+                    <td class="table-cell">${statusText}</td>
+                    <td class="table-cell">${formattedDate}</td>
+                    <td class="table-cell">${formattedEndDate}</td>
+                    <td class="table-cell">${contract.coolingPeriod} 天</td>
+                    <td class="table-cell">
+                        <div class="flex space-x-2">
+                            <button class="edit-btn text-cs2-secondary hover:text-blue-400" data-id="${contract.id}">
+                                <i class="fa fa-pencil"></i>
+                            </button>
+                            <button class="delete-btn text-danger hover:text-red-400" data-id="${contract.id}">
+                                <i class="fa fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                
+                tableBody.appendChild(row);
+            });
+            
+            // 添加编辑和删除按钮事件
+            document.querySelectorAll('.edit-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    openContractModal(btn.dataset.id);
+                });
+            });
+            
+            document.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    showConfirmDialog('删除合同', '您确定要删除此合同吗？此操作不可撤销。', 'deleteContract', btn.dataset.id);
+                });
+            });
+        }
+
+        // 获取总页数
+        function getTotalPages() {
+            return Math.ceil(filteredContracts.length / itemsPerPage);
+        }
+
+        // 检查合同是否在冷却中
+        function isContractCooling(contract) {
+            if (contract.status !== 'cooling') return false;
+            
+            const completionDate = new Date(contract.completionDate);
+            const coolingEnd = new Date(completionDate.getTime() + (contract.coolingPeriod * 24 * 60 * 60 * 1000));
+            
+            return new Date() < coolingEnd;
+        }
+
+        // 获取剩余冷却时间（天）
+        function getCoolingRemaining(contract) {
+            if (contract.status !== 'cooling') return 0;
+            
+            const completionDate = new Date(contract.completionDate);
+            const coolingEnd = new Date(completionDate.getTime() + (contract.coolingPeriod * 24 * 60 * 60 * 1000));
+            const now = new Date();
+            
+            if (now >= coolingEnd) return 0;
+            
+            const remainingMs = coolingEnd - now;
+            const remainingDays = Math.ceil(remainingMs / (1000 * 60 * 60 * 24));
+            
+            return remainingDays;
+        }
+
+        // 更新统计数据
+        function updateStatistics() {
+            const totalContractsEl = document.getElementById('totalContracts');
+            const totalProfitEl = document.getElementById('totalProfit');
+            const coolingContractsEl = document.getElementById('coolingContracts');
+            const successRateEl = document.getElementById('successRate');
+            
+            // 总合同数
+            totalContractsEl.textContent = contracts.length;
+            
+            // 总收益
+            const totalProfit = contracts.reduce((total, contract) => total + contract.profit, 0);
+            totalProfitEl.textContent = `¥${totalProfit.toFixed(2)}`;
+            
+            // 冷却中合同数
+            const coolingCount = contracts.filter(contract => isContractCooling(contract)).length;
+            coolingContractsEl.textContent = coolingCount;
+            
+            // 成功率
+            const profitableContracts = contracts.filter(contract => contract.profit > 0).length;
+            const successRate = contracts.length > 0 ? Math.round((profitableContracts / contracts.length) * 100) : 0;
+            successRateEl.textContent = `${successRate}%`;
+        }
+
+        // 初始化图表
+        function initCharts() {
+            // 收益趋势图
+            const profitCtx = document.getElementById('profitChart').getContext('2d');
+            profitChart = new Chart(profitCtx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: '利润',
+                        data: [],
+                        borderColor: '#FF6B00',
+                        backgroundColor: 'rgba(255, 107, 0, 0.1)',
+                        tension: 0.4,
+                        fill: true,
+                        pointTooltipFormat: '¥{value.toFixed(2)}'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#CCCCCC',
+                                font: {
+                                    size: 12
+                                }
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        return `利润: ¥${context.parsed.y.toFixed(2)}`;
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            ticks: {
+                                color: '#999999',
+                                font: {
+                                    size: 11
+                                }
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            }
+                        },
+                        y: {
+                            ticks: {
+                                color: '#999999',
+                                font: {
+                                    size: 11
+                                },
+                                callback: function(value) {
+                                    return '¥' + parseFloat(value).toFixed(2);
+                                }
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // 合同类型分布图
+            const typeCtx = document.getElementById('contractTypeChart').getContext('2d');
+            contractTypeChart = new Chart(typeCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['十合一', '五合一', '其他'],
+                    datasets: [{
+                        data: [0, 0, 0],
+                        backgroundColor: [
+                            '#FF6B00',
+                            '#0070F3',
+                            '#10B981'
+                        ],
+                        borderColor: '#1A1A1A',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: '#CCCCCC',
+                                padding: 20
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // 更新图表
+        function updateCharts() {
+            if (!contracts.length) return;
+            
+            // 更新收益趋势图
+            updateProfitChart();
+            
+            // 更新合同类型分布图
+            updateContractTypeChart();
+        }
+
+        // 更新收益趋势图
+        function updateProfitChart() {
+            // 按日期排序（最近30天或所有数据，取较小值）
+            const sortedContracts = [...contracts]
+                .sort((a, b) => new Date(a.completionDate) - new Date(b.completionDate))
+                .slice(-Math.min(30, contracts.length));
+            
+            const labels = sortedContracts.map(contract => {
+                const date = new Date(contract.completionDate);
+                return `${date.getMonth() + 1}/${date.getDate()}`;
+            });
+            
+            // 保留两位小数
+            const data = sortedContracts.map(contract => parseFloat(contract.profit.toFixed(2)));
+            
+            profitChart.data.labels = labels;
+            profitChart.data.datasets[0].data = data;
+            profitChart.update();
+        }
+
+        // 更新合同类型分布图
+        function updateContractTypeChart() {
+            const typeCounts = {
+                tenToOne: 0,
+                fiveToOne: 0,
+                other: 0
+            };
+            
+            contracts.forEach(contract => {
+                typeCounts[contract.contractType]++;
+            });
+            
+            contractTypeChart.data.datasets[0].data = [
+                typeCounts.tenToOne,
+                typeCounts.fiveToOne,
+                typeCounts.other
+            ];
+            
+            contractTypeChart.update();
+        }
+
+        // 导出数据
+        function exportData() {
+            if (contracts.length === 0) {
+                showNotification('提示', '没有数据可导出', 'warning');
+                return;
+            }
+            
+            const dataStr = JSON.stringify(contracts, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(dataBlob);
+            link.download = `cs2-contracts-${new Date().toISOString().slice(0, 10)}.json`;
+            link.click();
+            
+            showNotification('成功', '数据导出成功', 'success');
+        }
+
+        // 导入数据
+        function importData(file) {
+            if (!file) return;
+            
+            const reader = new FileReader();
+            
+            reader.onload = (event) => {
+                try {
+                    const importedContracts = JSON.parse(event.target.result);
+                    
+                    if (!Array.isArray(importedContracts)) {
+                        throw new Error('无效的数据格式');
+                    }
+                    
+                    // 验证数据结构
+                    const validContracts = importedContracts.filter(contract => {
+                        return contract.hasOwnProperty('contractType') &&
+                               contract.hasOwnProperty('inputItems') &&
+                               Array.isArray(contract.inputItems) &&
+                               contract.hasOwnProperty('outputItem') &&
+                               contract.hasOwnProperty('cost') &&
+                               contract.hasOwnProperty('revenue') &&
+                               contract.hasOwnProperty('profit') &&
+                               contract.hasOwnProperty('status') &&
+                               contract.hasOwnProperty('completionDate');
+                    });
+                    
+                    if (validContracts.length === 0) {
+                        throw new Error('没有有效的合同数据');
+                    }
+                    
+                    // 询问是否合并或替换现有数据
+                    if (contracts.length > 0) {
+                        showConfirmDialog(
+                            '导入数据',
+                            `发现 ${validContracts.length} 个有效合同。是否替换现有数据？选择"取消"将合并数据。`,
+                            'importDataReplace',
+                            validContracts
+                        );
+                    } else {
+                        // 直接导入
+                        importContractsToDb(validContracts, true);
+                    }
+                } catch (error) {
+                    showNotification('错误', `导入失败: ${error.message}`, 'error');
+                    console.error('导入数据失败:', error);
+                }
+            };
+            
+            reader.onerror = () => {
+                showNotification('错误', '读取文件失败', 'error');
+            };
+            
+            reader.readAsText(file);
+        }
+
+        // 导入合同到数据库
+        function importContractsToDb(contractsToImport, replaceExisting = false) {
+            const transaction = db.transaction(['contracts'], 'readwrite');
+            const store = transaction.objectStore('contracts');
+            
+            if (replaceExisting) {
+                // 清除现有数据
+                store.clear();
+            }
+            
+            // 导入新数据（不保留原有ID）
+            contractsToImport.forEach(contract => {
+                delete contract.id;
+                store.add(contract);
+            });
+            
+            transaction.oncomplete = () => {
+                showNotification('成功', `成功导入 ${contractsToImport.length} 个合同`, 'success');
+                loadContracts();
+            };
+            
+            transaction.onerror = (event) => {
+                showNotification('错误', '导入数据失败', 'error');
+                console.error('导入数据失败:', event.target.error);
+            };
+        }
+
+        // 清除所有数据
+        function clearAllData() {
+            const transaction = db.transaction(['contracts'], 'readwrite');
+            const store = transaction.objectStore('contracts');
+            const request = store.clear();
+            
+            request.onsuccess = () => {
+                showNotification('成功', '所有数据已清除', 'success');
+                contracts = [];
+                filteredContracts = [];
+                displayContracts();
+                updateStatistics();
+                updateCharts();
+            };
+            
+            request.onerror = (event) => {
+                showNotification('错误', '清除数据失败', 'error');
+                console.error('清除数据失败:', event.target.error);
+            };
+        }
+
+        // 显示确认对话框
+        function showConfirmDialog(title, message, action, data = null) {
+            const dialog = document.getElementById('confirmDialog');
+            document.getElementById('confirmTitle').textContent = title;
+            document.getElementById('confirmMessage').textContent = message;
+            
+            currentConfirmAction = {
+                action,
+                data
+            };
+            
+            dialog.classList.remove('hidden');
+        }
+
+        // 关闭确认对话框
+        function closeConfirmDialog() {
+            document.getElementById('confirmDialog').classList.add('hidden');
+            currentConfirmAction = null;
+        }
+
+        // 执行确认操作
+        function executeConfirmAction() {
+            if (!currentConfirmAction) return;
+            
+            const { action, data } = currentConfirmAction;
+            
+            switch (action) {
+                case 'deleteContract':
+                    deleteContract(parseInt(data));
+                    break;
+                case 'clearData':
+                    clearAllData();
+                    break;
+                case 'importDataReplace':
+                    importContractsToDb(data, true);
+                    break;
+                case 'importDataMerge':
+                    importContractsToDb(data, false);
+                    break;
+            }
+            
+            closeConfirmDialog();
+        }
+
+        // 显示通知
+        function showNotification(title, message, type = 'info') {
+            const notification = document.getElementById('notification');
+            const icon = document.getElementById('notificationIcon');
+            const titleEl = document.getElementById('notificationTitle');
+            const messageEl = document.getElementById('notificationMessage');
+            
+            // 设置图标和颜色
+            switch (type) {
+                case 'success':
+                    icon.innerHTML = '<i class="fa fa-check-circle"></i>';
+                    icon.className = 'mr-3 text-lg text-success';
+                    break;
+                case 'error':
+                    icon.innerHTML = '<i class="fa fa-exclamation-circle"></i>';
+                    icon.className = 'mr-3 text-lg text-danger';
+                    break;
+                case 'warning':
+                    icon.innerHTML = '<i class="fa fa-exclamation-triangle"></i>';
+                    icon.className = 'mr-3 text-lg text-warning';
+                    break;
+                default:
+                    icon.innerHTML = '<i class="fa fa-info-circle"></i>';
+                    icon.className = 'mr-3 text-lg text-info';
+            }
+            
+            // 设置标题和消息
+            titleEl.textContent = title;
+            messageEl.textContent = message;
+            
+            // 显示通知
+            notification.classList.remove('translate-x-full');
+            
+            // 3秒后自动关闭
+            clearTimeout(notification.timeout);
+            notification.timeout = setTimeout(() => {
+                closeNotification();
+            }, 3000);
+        }
+
+        // 关闭通知
+        function closeNotification() {
+            const notification = document.getElementById('notification');
+            notification.classList.add('translate-x-full');
+        }
+        
+        // 获取磨损文本
+        function getWearText(wear) {
+            const wearMap = {
+                'factoryNew': '崭新出厂',
+                'minimalWear': '略有磨损',
+                'fieldTested': '久经沙场',
+                'wellWorn': '破损不堪',
+                'battleScarred': '战痕累累'
+            };
+            
+            return wearMap[wear] || '久经沙场';
+        }
+    </script>
+</body>
+</html>
