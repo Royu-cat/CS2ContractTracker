@@ -104,21 +104,33 @@
                 border: 2px solid #1A1A1A;
             }
         }
-         @media only screen and (max-width: 666px) {
-                    button{font-size: 70%!important;}
-                    .container .gap-6 {
-                        gap: 0.7rem!important;
-                    }
-                    .container .p-6 {
-                        padding: 0.5rem!important;
-                    }
-                    .container .p-3 {
-                        padding: 0.25rem 0.45rem;
-                        width: 2.5em;
-                        height: 2.5em;
-                        text-align: center;
-                    }
-                }
+
+        @media only screen and (max-width: 666px) {
+            body > div.relative.z-10 > header > div > div.flex.items-center.mb-4.md\:mb-0 > img {
+                height: 1.8rem;
+            }
+            body > div.relative.z-10 > header > div > div.flex.items-center.mb-4.md\:mb-0 > .text-cs2-accent {
+                font-size: 16px;
+            }
+            button {
+                font-size: 70% !important;
+            }
+
+            .container .gap-6 {
+                gap: 0.7rem !important;
+            }
+
+            .container .p-6 {
+                padding: 0.5rem !important;
+            }
+
+            .container .p-3 {
+                padding: 0.25rem 0.45rem;
+                width: 2.5em;
+                height: 2.5em;
+                text-align: center;
+            }
+        }
     </style>
 </head>
 <body class="bg-cs2-dark text-light min-h-screen">
@@ -1006,9 +1018,21 @@
                     '<span class="badge badge-success">已完成</span>' :
                     coolingStatus;
 
-                // 利润显示样式
-                const profitClass = contract.profit > 0 ? 'text-success' : contract.profit < 0 ? 'text-danger' : 'text-gray-400';
-                const profitSign = contract.profit > 0 ? '+' : '';
+                // 计算合同是否已过冷却期
+                const coolingEnd = new Date(completionDate.getTime() + (contract.coolingPeriod * 24 * 60 * 60 * 1000));
+                const isCoolingPeriodPassed = coolingEnd < new Date();
+
+                // 利润显示样式（仅在冷却期过后计算盈亏）
+                let profitClass = 'text-gray-400';
+                let profitSign = '';
+                let displayProfit = contract.profit;
+
+                if (isCoolingPeriodPassed && contract.outputItem.name) {
+                    profitClass = contract.profit > 0 ? 'text-success' : contract.profit < 0 ? 'text-danger' : 'text-gray-400';
+                    profitSign = contract.profit > 0 ? '+' : '';
+                } else {
+                    displayProfit = '-';
+                }
 
                 // 投入物品显示（最多显示3个，其余用省略号）
                 let inputItemsDisplay = '';
@@ -1037,7 +1061,7 @@
                     </td>
                     <td class="table-cell">¥${contract.cost.toFixed(2)}</td>
                     <td class="table-cell">¥${contract.revenue.toFixed(2)}</td>
-                    <td class="table-cell ${profitClass} font-bold">${profitSign}¥${contract.profit.toFixed(2)}</td>
+                    <td class="table-cell ${profitClass} font-bold">${isCoolingPeriodPassed && contract.outputItem.name ? `${profitSign}¥${displayProfit.toFixed(2)}` : '-'}</td>
                     <td class="table-cell">${statusText}</td>
                     <td class="table-cell hidden sm:table-cell">${formattedDate}</td>
                     <td class="table-cell hidden md:table-cell">${formattedEndDate}</td>
@@ -1135,7 +1159,7 @@
                 data: {
                     labels: [],
                     datasets: [{
-                        label: '利润',
+                        label: '累计总收益',
                         data: [],
                         borderColor: '#FF6B00',
                         backgroundColor: 'rgba(255, 107, 0, 0.1)',
@@ -1158,7 +1182,7 @@
                             tooltip: {
                                 callbacks: {
                                     label: function(context) {
-                                        return `利润: ¥${context.parsed.y.toFixed(2)}`;
+                                        return `累计总收益: ¥${context.parsed.y.toFixed(2)}`;
                                     }
                                 }
                             }
@@ -1250,8 +1274,12 @@
                 return `${date.getMonth() + 1}/${date.getDate()}`;
             });
 
-            // 保留两位小数
-            const data = sortedContracts.map(contract => parseFloat(contract.profit.toFixed(2)));
+            // 计算累计总收益
+            let cumulativeProfit = 0;
+            const data = sortedContracts.map(contract => {
+                cumulativeProfit += contract.profit;
+                return parseFloat(cumulativeProfit.toFixed(2));
+            });
 
             profitChart.data.labels = labels;
             profitChart.data.datasets[0].data = data;
