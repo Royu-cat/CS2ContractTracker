@@ -267,11 +267,11 @@
                                 <th scope="col" class="table-header">ID</th>
                                 <th scope="col" class="table-header">开始时间</th>
                                 <th scope="col" class="table-header">预计完成时间</th>
-                                <th scope="col" class="table-header hidden md:table-cell">合同类型</th>
-                                <th scope="col" class="table-header hidden sm:table-cell">投入物品</th>
-                                <th scope="col" class="table-header hidden sm:table-cell">产出物品</th>
-                                <th scope="col" class="table-header hidden sm:table-cell">成本</th>
-                                <th scope="col" class="table-header hidden sm:table-cell">收益</th>
+                                <th scope="col" class="table-header md:table-cell">合同类型</th>
+                                <th scope="col" class="table-header sm:table-cell">投入物品</th>
+                                <th scope="col" class="table-header sm:table-cell">产出物品</th>
+                                <th scope="col" class="table-header sm:table-cell">成本</th>
+                                <th scope="col" class="table-header sm:table-cell">收益</th>
                                 <th scope="col" class="table-header">利润</th>
                                 <th scope="col" class="table-header">状态</th>
                                 <th scope="col" class="table-header">冷却时间</th>
@@ -1062,16 +1062,16 @@
                     <td class="table-cell">#${contract.id}</td>
                     <td class="table-cell">${formattedDate}</td>
                     <td class="table-cell">${formattedEndDate}</td>
-                    <td class="table-cell hidden md:table-cell">${contractTypeText}</td>
-                    <td class="table-cell hidden sm:table-cell">${inputItemsDisplay}</td>
-                    <td class="table-cell hidden sm:table-cell">
+                    <td class="table-cell md:table-cell">${contractTypeText}</td>
+                    <td class="table-cell sm:table-cell">${inputItemsDisplay}</td>
+                    <td class="table-cell sm:table-cell">
                         ${contract.outputItem.name ?
                             `${contract.outputItem.name} (${contract.outputItem.wearValue ? `${getWearText(contract.outputItem.wear)} ${contract.outputItem.wearValue}` : getWearText(contract.outputItem.wear)} ¥${contract.outputItem.price.toFixed(2)})` :
                             '<span class="text-gray-500">暂未添加</span>'
                         }
                     </td>
-                    <td class="table-cell hidden sm:table-cell">¥${contract.cost.toFixed(2)}</td>
-                    <td class="table-cell hidden sm:table-cell">¥${contract.revenue.toFixed(2)}</td>
+                    <td class="table-cell sm:table-cell">¥${contract.cost.toFixed(2)}</td>
+                    <td class="table-cell sm:table-cell">¥${contract.revenue.toFixed(2)}</td>
                     <td class="table-cell ${profitClass} font-bold">${isActuallyCompleted ? `${profitSign}¥${displayProfit.toFixed(2)}` : '-'}</td>
                     <td class="table-cell">${statusText}</td>
                     <td class="table-cell">${contract.coolingPeriod} 天</td>
