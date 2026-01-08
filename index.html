@@ -59,7 +59,6 @@
             .btn-outline {
                 @apply border border-cs2-accent text-cs2-accent hover:bg-cs2-accent hover:text-white font-bold py-2 px-4 rounded transition-all duration-300;
             }
-            .input-item .input-field {margin-bottom: 4px;}
             .input-field {
                 @apply bg-dark border border-gray-700 text-light rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cs2-accent;
             }
@@ -114,19 +113,19 @@
     <div class="relative z-10">
         <!-- 顶部导航 -->
         <header class="glass-effect sticky top-0 z-50 border-b border-gray-800">
-            <div class="container mx-auto px-4 py-4 flex flex-col md:flex-row justify-between items-center">
-                <div class="flex items-center mb-4 md:mb-0">
-                    <img src="https://p3-doubao-search-sign.byteimg.com/labis/d29e4f139050167675ead6ec181ea8cf~tplv-be4g95zd3a-image.jpeg?lk3s=feb11e32&x-expires=1783350666&x-signature=AI%2FjPniIj8kQzZVZ6ipFUBR9iVA%3D" alt="CS2 Logo" class="h-10 w-auto mr-3">
-                    <h1 class="text-2xl font-bold text-cs2-accent">CS2 汰换合同追踪器</h1>
+            <div class="container mx-auto px-4 py-3 sm:py-4 flex flex-col md:flex-row justify-between items-center">
+                <div class="flex items-center mb-3 sm:mb-4 md:mb-0">
+                    <img src="https://p3-doubao-search-sign.byteimg.com/labis/d29e4f139050167675ead6ec181ea8cf~tplv-be4g95zd3a-image.jpeg?lk3s=feb11e32&x-expires=1783350666&x-signature=AI%2FjPniIj8kQzZVZ6ipFUBR9iVA%3D" alt="CS2 Logo" class="h-8 sm:h-10 w-auto mr-2 sm:mr-3">
+                    <h1 class="text-xl sm:text-2xl font-bold text-cs2-accent">CS2 汰换合同追踪器</h1>
                 </div>
-                <div class="flex space-x-4">
-                    <button id="addContractBtn" class="btn-primary flex items-center">
-                        <i class="fa fa-plus mr-2"></i> 新增合同
+                <div class="flex space-x-3 sm:space-x-4 w-full sm:w-auto">
+                    <button id="addContractBtn" class="btn-primary flex items-center text-sm py-1.5 px-3 sm:py-2 sm:px-4 w-full sm:w-auto">
+                        <i class="fa fa-plus mr-1 sm:mr-2"></i> 新增合同
                     </button>
                     <div class="relative" id="settingsDropdown">
-                        <button class="btn-secondary flex items-center" id="settingsButton">
-                            <i class="fa fa-cog mr-2"></i> 设置
-                            <i class="fa fa-caret-down ml-2"></i>
+                        <button class="btn-secondary flex items-center text-sm py-1.5 px-3 sm:py-2 sm:px-4" id="settingsButton">
+                            <i class="fa fa-cog mr-1 sm:mr-2"></i> 设置
+                            <i class="fa fa-caret-down ml-1 sm:ml-2"></i>
                         </button>
                         <div class="absolute right-0 mt-2 w-48 glass-effect rounded-md shadow-lg overflow-hidden z-50 hidden" id="settingsMenu">
                             <div class="py-1">
@@ -150,7 +149,7 @@
         <!-- 主内容区 -->
         <main class="container mx-auto px-4 py-8">
             <!-- 统计卡片 -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
                 <div class="glass-effect rounded-lg p-6 card-hover">
                     <div class="flex items-center">
                         <div class="p-3 rounded-full bg-cs2-accent bg-opacity-20 text-cs2-accent">
