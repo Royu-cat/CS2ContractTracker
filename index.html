@@ -980,7 +980,7 @@
                 const row = document.createElement('tr');
                 row.className = 'hover:bg-gray-900';
 
-                // 格式化日期
+                // 格式化日期（移动端简化显示）
                 const completionDate = new Date(contract.completionDate);
                 const formattedDate = completionDate.toLocaleString('zh-CN', {
                     year: 'numeric',
@@ -990,7 +990,7 @@
                     minute: '2-digit'
                 });
 
-                // 计算并格式化预计完成时间
+                // 计算并格式化预计完成时间（移动端简化显示）
                 const endDate = new Date(completionDate.getTime() + (contract.coolingPeriod * 24 * 60 * 60 * 1000));
                 const formattedEndDate = endDate.toLocaleString('zh-CN', {
                     year: 'numeric',
@@ -1019,6 +1019,10 @@
                     'other': '其他'
                 }[contract.contractType] || '其他';
 
+                // 计算合同是否已过冷却期
+                const coolingEnd = new Date(completionDate.getTime() + (contract.coolingPeriod * 24 * 60 * 60 * 1000));
+                const isCoolingPeriodPassed = coolingEnd < new Date();
+
                 // 判断合同是否真正完成（冷却期已过且有产物）
                 const isActuallyCompleted = contract.status === 'completed' && isCoolingPeriodPassed && contract.outputItem.name;
 
@@ -1026,10 +1030,6 @@
                 const statusText = isActuallyCompleted ?
                     '<span class="badge badge-success">已完成</span>' :
                     coolingStatus;
-
-                // 计算合同是否已过冷却期
-                const coolingEnd = new Date(completionDate.getTime() + (contract.coolingPeriod * 24 * 60 * 60 * 1000));
-                const isCoolingPeriodPassed = coolingEnd < new Date();
 
                 // 利润显示样式（仅在真正完成时计算盈亏）
                 let profitClass = 'text-gray-400';
