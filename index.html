@@ -1289,25 +1289,41 @@
 
         // 更新收益趋势图
         function updateProfitChart() {
+            // 筛选真正完成的合同（有产物且冷却期已过）
+            const completedContracts = contracts.filter(contract => {
+                if (!contract.outputItem.name) return false;
+                const completionDate = new Date(contract.completionDate);
+                const coolingEnd = new Date(completionDate.getTime() + (contract.coolingPeriod * 24 * 60 * 60 * 1000));
+                return coolingEnd < new Date();
+            });
+
             // 按日期排序（最近30天或所有数据，取较小值）
-            const sortedContracts = [...contracts]
+            const sortedContracts = [...completedContracts]
                 .sort((a, b) => new Date(a.completionDate) - new Date(b.completionDate))
-                .slice(-Math.min(30, contracts.length));
+                .slice(-Math.min(30, completedContracts.length));
 
-            const labels = sortedContracts.map(contract => {
-                const date = new Date(contract.completionDate);
-                return `${date.getMonth() + 1}/${date.getDate()}`;
-            });
+            // 只有在有完成的合同时才更新图表数据
+            if (sortedContracts.length > 0) {
+                const labels = sortedContracts.map(contract => {
+                    const date = new Date(contract.completionDate);
+                    return `${date.getMonth() + 1}/${date.getDate()}`;
+                });
 
-            // 计算累计总收益
-            let cumulativeProfit = 0;
-            const data = sortedContracts.map(contract => {
-                cumulativeProfit += contract.profit;
-                return parseFloat(cumulativeProfit.toFixed(2));
-            });
+                // 计算累计总收益
+                let cumulativeProfit = 0;
+                const data = sortedContracts.map(contract => {
+                    cumulativeProfit += contract.profit;
+                    return parseFloat(cumulativeProfit.toFixed(2));
+                });
 
-            profitChart.data.labels = labels;
-            profitChart.data.datasets[0].data = data;
+                profitChart.data.labels = labels;
+                profitChart.data.datasets[0].data = data;
+            } else {
+                // 如果没有完成的合同，显示空图表
+                profitChart.data.labels = [];
+                profitChart.data.datasets[0].data = [];
+            }
+
             profitChart.update();
         }
 
