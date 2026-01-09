@@ -151,310 +151,414 @@
             header .container > .items-center{width: 100%;justify-content: space-between;}
             #notification.translate-x-full{opacity: 0;}
         }
+        .container .flex > .btn-primary {
+            padding-top: 0.3rem;
+            padding-bottom: 0.3rem;
+        }
     </style>
 </head>
 <body class="bg-cs2-dark text-light min-h-screen">
-    <!-- 背景图 -->
-    <div class="fixed inset-0 bg-cs2-pattern bg-cover bg-center opacity-10 z-0"></div>
+<!-- 背景图 -->
+<div class="fixed inset-0 bg-cs2-pattern bg-cover bg-center opacity-10 z-0"></div>
 
-    <!-- 主容器 -->
-    <div class="relative z-10">
-        <!-- 顶部导航 -->
-        <header class="glass-effect sticky top-0 z-50 border-b border-gray-800">
-            <div class="container mx-auto px-4 py-4 flex flex-col md:flex-row justify-between items-center">
-                <div class="flex items-center mb-4 md:mb-0">
-                    <img src="https://p3-doubao-search-sign.byteimg.com/labis/d29e4f139050167675ead6ec181ea8cf~tplv-be4g95zd3a-image.jpeg?lk3s=feb11e32&x-expires=1783350666&x-signature=AI%2FjPniIj8kQzZVZ6ipFUBR9iVA%3D" alt="CS2 Logo" class="h-10 w-auto mr-3">
-<!--                    <h1 class="text-2xl font-bold text-cs2-accent">CS2 汰换合同追踪器</h1>-->
-                    <div class="flex space-x-4">
-                        <button id="addContractBtn" class="btn-primary flex items-center">
-                            <i class="fa fa-plus mr-2"></i> 新增合同
+<!-- 主容器 -->
+<div class="relative z-10">
+    <!-- 顶部导航 -->
+    <header class="glass-effect sticky top-0 z-50 border-b border-gray-800">
+        <div class="container mx-auto px-4 py-4 flex flex-col md:flex-row justify-between items-center">
+            <div class="flex items-center mb-4 md:mb-0">
+                <img src="https://p3-doubao-search-sign.byteimg.com/labis/d29e4f139050167675ead6ec181ea8cf~tplv-be4g95zd3a-image.jpeg?lk3s=feb11e32&x-expires=1783350666&x-signature=AI%2FjPniIj8kQzZVZ6ipFUBR9iVA%3D" alt="CS2 Logo" class="h-10 w-auto mr-3">
+                <!--                    <h1 class="text-2xl font-bold text-cs2-accent">CS2 汰换合同追踪器</h1>-->
+                <div class="flex space-x-4">
+                    <button id="addContractBtn" class="btn-primary flex items-center">
+                        <i class="fa fa-plus mr-2"></i> 新增合同
+                    </button>
+                    <div class="relative" id="userDropdown">
+                        <button class="btn-secondary flex items-center text-sm py-1.5 px-3 sm:py-2 sm:px-4" id="userButton">
+                            <i class="fa fa-user-circle mr-1 sm:mr-2"></i>
+                            <span id="userName">未登录</span>
+                            <i class="fa fa-caret-down ml-1 sm:ml-2"></i>
                         </button>
-                        <div class="relative" id="settingsDropdown">
-                            <button class="btn-secondary flex items-center" id="settingsButton">
-                                <i class="fa fa-cog mr-2"></i> 设置
-                                <i class="fa fa-caret-down ml-2"></i>
-                            </button>
-                            <div class="absolute right-0 mt-2 w-48 glass-effect rounded-md shadow-lg overflow-hidden z-50 hidden" id="settingsMenu">
-                                <div class="py-1">
-                                    <button id="exportDataBtn" class="block w-full text-left px-4 py-2 hover:bg-gray-800">
-                                        <i class="fa fa-download mr-2"></i> 导出数据
-                                    </button>
-                                    <button id="importDataBtn" class="block w-full text-left px-4 py-2 hover:bg-gray-800">
-                                        <i class="fa fa-upload mr-2"></i> 导入数据
-                                    </button>
-                                    <input type="file" id="importFileInput" accept=".json" class="hidden">
-                                    <button id="clearDataBtn" class="block w-full text-left px-4 py-2 hover:bg-gray-800 text-danger">
-                                        <i class="fa fa-trash mr-2"></i> 清除数据
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </header>
-
-        <!-- 主内容区 -->
-        <main class="container mx-auto px-4 py-8">
-            <!-- 统计卡片 -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                <div class="glass-effect rounded-lg p-6 card-hover">
-                    <div class="flex items-center">
-                        <div class="p-3 rounded-full bg-cs2-accent bg-opacity-20 text-cs2-accent">
-                            <i class="fa fa-file-text-o text-2xl"></i>
-                        </div>
-                        <div class="ml-4">
-                            <p class="text-gray-400 text-sm">总合同数</p>
-                            <p id="totalContracts" class="text-2xl font-bold">0</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="glass-effect rounded-lg p-6 card-hover">
-                    <div class="flex items-center">
-                        <div class="p-3 rounded-full bg-success bg-opacity-20 text-success">
-                            <i class="fa fa-money text-2xl"></i>
-                        </div>
-                        <div class="ml-4">
-                            <p class="text-gray-400 text-sm">总收益</p>
-                            <p id="totalProfit" class="text-2xl font-bold">¥0.00</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="glass-effect rounded-lg p-6 card-hover">
-                    <div class="flex items-center">
-                        <div class="p-3 rounded-full bg-warning bg-opacity-20 text-warning">
-                            <i class="fa fa-clock-o text-2xl"></i>
-                        </div>
-                        <div class="ml-4">
-                            <p class="text-gray-400 text-sm">冷却中合同</p>
-                            <p id="coolingContracts" class="text-2xl font-bold">0</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="glass-effect rounded-lg p-6 card-hover">
-                    <div class="flex items-center">
-                        <div class="p-3 rounded-full bg-info bg-opacity-20 text-info">
-                            <i class="fa fa-line-chart text-2xl"></i>
-                        </div>
-                        <div class="ml-4">
-                            <p class="text-gray-400 text-sm">成功率</p>
-                            <p id="successRate" class="text-2xl font-bold">0%</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 图表区域 -->
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-                <div class="glass-effect rounded-lg p-6">
-                    <h3 class="text-lg font-semibold mb-4">收益趋势</h3>
-                    <div class="h-48 md:h-64">
-                        <canvas id="profitChart"></canvas>
-                    </div>
-                </div>
-                <div class="glass-effect rounded-lg p-6 hidden md:block">
-                    <h3 class="text-lg font-semibold mb-4">合同类型分布</h3>
-                    <div class="h-64">
-                        <canvas id="contractTypeChart"></canvas>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 合同列表 -->
-            <div class="glass-effect rounded-lg overflow-hidden">
-                <div class="px-4 sm:px-6 py-4 border-b border-gray-800">
-                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                        <h2 class="text-xl font-bold whitespace-nowrap">合同列表</h2>
-                        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 w-full sm:w-auto">
-                            <div class="relative w-full sm:w-auto">
-                                <input type="text" id="searchInput" placeholder="搜索合同..." class="input-field pr-10 w-full">
-                                <i class="fa fa-search absolute right-3 top-3 text-gray-500"></i>
-                            </div>
-                            <select id="filterSelect" class="input-field w-full sm:w-auto">
-                                <option value="all">全部合同</option>
-                                <option value="completed">已完成</option>
-                                <option value="cooling">冷却中</option>
-                                <option value="profitable">盈利</option>
-                                <option value="loss">亏损</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-                <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-800">
-                        <thead class="bg-gray-900">
-                            <tr>
-                                <th scope="col" class="table-header">ID</th>
-                                <th scope="col" class="table-header sm:table-cell">产出物品</th>
-                                <th scope="col" class="table-header sm:table-cell">成本</th>
-                                <th scope="col" class="table-header sm:table-cell">收益</th>
-                                <th scope="col" class="table-header">利润</th>
-                                <th scope="col" class="table-header sm:table-cell">投入物品</th>
-                                <th scope="col" class="table-header">状态</th>
-                                <th scope="col" class="table-header">开始时间</th>
-                                <th scope="col" class="table-header">预计完成时间</th>
-                                <th scope="col" class="table-header md:table-cell">合同类型</th>
-                                <th scope="col" class="table-header">冷却时间</th>
-                                <th scope="col" class="table-header">操作</th>
-                            </tr>
-                        </thead>
-                        <tbody id="contractTableBody" class="bg-dark divide-y divide-gray-800">
-                            <!-- 合同数据将通过JavaScript动态填充 -->
-                            <tr>
-                                <td colspan="12" class="table-cell text-center">暂无合同数据，请添加新合同</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div id="pagination" class="px-6 py-4 border-t border-gray-800 flex justify-between items-center">
-                    <div class="text-sm text-gray-400">
-                        显示 <span id="showingRange">0-0</span> 条，共 <span id="totalItems">0</span> 条
-                    </div>
-                    <div class="flex space-x-2">
-                        <button id="prevPageBtn" class="btn-outline py-1 px-3 disabled:opacity-50 disabled:cursor-not-allowed">
-                            <i class="fa fa-chevron-left"></i>
-                        </button>
-                        <button id="nextPageBtn" class="btn-outline py-1 px-3 disabled:opacity-50 disabled:cursor-not-allowed">
-                            <i class="fa fa-chevron-right"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </main>
-
-        <!-- 页脚 -->
-        <footer class="glass-effect border-t border-gray-800 py-6">
-            <div class="container mx-auto px-4 text-center text-gray-500 text-sm">
-                <p>CS2 汰换合同追踪器 &copy; 2026 | 仅供游戏辅助使用</p>
-            </div>
-        </footer>
-    </div>
-
-    <!-- 新增/编辑合同模态框 -->
-    <div id="contractModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
-        <div class="glass-effect rounded-lg p-4 sm:p-6 w-full max-w-4xl max-h-[90vh] overflow-y-auto scrollbar-thin scrollbar-thumb-cs2-accent scrollbar-track-gray-800 text-sm">
-            <div class="flex justify-between items-center mb-6">
-                <h2 id="modalTitle" class="text-xl font-bold">新增合同</h2>
-                <button id="closeModalBtn" class="text-gray-400 hover:text-white">
-                    <i class="fa fa-times text-xl"></i>
-                </button>
-            </div>
-            <form id="contractForm">
-                <input type="hidden" id="contractId">
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-                    <div>
-                        <label for="contractType" class="block text-sm font-medium text-gray-400 mb-1">合同类型</label>
-                        <select id="contractType" class="input-field w-full" required>
-                            <option value="tenToOne">十合一</option>
-                            <option value="fiveToOne">五合一</option>
-                            <option value="other">其他</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label for="status" class="block text-sm font-medium text-gray-400 mb-1">状态</label>
-                        <select id="status" class="input-field w-full" required>
-                            <option value="completed">已完成</option>
-                            <option value="cooling">冷却中</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="mb-6">
-                    <label class="block text-sm font-medium text-gray-400 mb-1">投入物品</label>
-                    <div id="inputItemsContainer" class="space-y-4">
-                        <!-- 投入物品将通过JavaScript动态添加 -->
-                        <div class="input-item flex flex-col sm:flex-row items-stretch sm:items-center gap-4 sm:gap-3 p-4 bg-gray-900 bg-opacity-50 rounded-lg">
-                            <input type="text" class="input-field flex-1 mb-4 sm:mb-0" placeholder="物品名称" required>
-                            <div class="flex gap-2 sm:gap-3 w-full sm:w-auto">
-                                <input type="number" class="input-field w-full sm:w-24 mb-4 sm:mb-0" placeholder="数量" min="1" value="1" required>
-                                <input type="number" class="input-field w-full sm:w-24 mb-4 sm:mb-0" placeholder="单价" step="0.01" min="0" required>
-                                <button type="button" class="remove-item-btn text-danger hover:text-red-400 px-2 flex items-center justify-center">
-                                    <i class="fa fa-trash"></i>
+                        <div class="absolute right-0 mt-2 w-48 glass-effect rounded-md shadow-lg overflow-hidden z-50 hidden" id="userMenu">
+                            <div class="py-1">
+                                <button id="profileBtn" class="block w-full text-left px-4 py-2 hover:bg-gray-800 hidden">
+                                    <i class="fa fa-user mr-2"></i> 个人资料
+                                </button>
+                                <button id="changePasswordBtn" class="block w-full text-left px-4 py-2 hover:bg-gray-800 hidden">
+                                    <i class="fa fa-lock mr-2"></i> 修改密码
+                                </button>
+                                <div class="border-t border-gray-700 my-1"></div>
+                                <button id="loginBtn" class="block w-full text-left px-4 py-2 hover:bg-gray-800">
+                                    <i class="fa fa-sign-in mr-2"></i> 登录
+                                </button>
+                                <button id="registerBtn" class="block w-full text-left px-4 py-2 hover:bg-gray-800">
+                                    <i class="fa fa-user-plus mr-2"></i> 注册
+                                </button>
+                                <button id="logoutBtn" class="block w-full text-left px-4 py-2 hover:bg-gray-800 text-danger hidden">
+                                    <i class="fa fa-sign-out mr-2"></i> 登出
                                 </button>
                             </div>
                         </div>
                     </div>
-                    <button type="button" id="addInputItemBtn" class="btn-outline mt-3 py-1 px-3 text-sm w-full sm:w-auto">
-                        <i class="fa fa-plus mr-1"></i> 添加物品
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主内容区 -->
+    <main class="container mx-auto px-4 py-8">
+
+        <div id="loginPrompt" class="glass-effect rounded-lg p-8 text-center mb-8">
+            <div class="max-w-md mx-auto">
+                <div class="text-6xl mb-4 text-cs2-accent">
+                    <i class="fa fa-lock"></i>
+                </div>
+                <h2 class="text-2xl font-bold mb-4">请先登录</h2>
+                <p class="text-gray-400 mb-6">登录后即可开始管理您的CS2汰换合同</p>
+                <div class="flex justify-center space-x-4">
+                    <button id="promptLoginBtn" class="btn-primary">
+                        <i class="fa fa-sign-in mr-2"></i> 立即登录
+                    </button>
+                    <button id="promptRegisterBtn" class="btn-outline">
+                        <i class="fa fa-user-plus mr-2"></i> 注册账号
                     </button>
                 </div>
+            </div>
+        </div>
+        <!-- 统计卡片 -->
+        <div id="statisticsSection" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 hidden">
+            <div class="glass-effect rounded-lg p-6 card-hover">
+                <div class="flex items-center">
+                    <div class="p-3 rounded-full bg-cs2-accent bg-opacity-20 text-cs2-accent">
+                        <i class="fa fa-file-text-o text-2xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-gray-400 text-sm">总合同数</p>
+                        <p id="totalContracts" class="text-2xl font-bold">0</p>
+                    </div>
+                </div>
+            </div>
+            <div class="glass-effect rounded-lg p-6 card-hover">
+                <div class="flex items-center">
+                    <div class="p-3 rounded-full bg-success bg-opacity-20 text-success">
+                        <i class="fa fa-money text-2xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-gray-400 text-sm">总收益</p>
+                        <p id="totalProfit" class="text-2xl font-bold">¥0.00</p>
+                    </div>
+                </div>
+            </div>
+            <div class="glass-effect rounded-lg p-6 card-hover">
+                <div class="flex items-center">
+                    <div class="p-3 rounded-full bg-warning bg-opacity-20 text-warning">
+                        <i class="fa fa-clock-o text-2xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-gray-400 text-sm">冷却中合同</p>
+                        <p id="coolingContracts" class="text-2xl font-bold">0</p>
+                    </div>
+                </div>
+            </div>
+            <div class="glass-effect rounded-lg p-6 card-hover">
+                <div class="flex items-center">
+                    <div class="p-3 rounded-full bg-info bg-opacity-20 text-info">
+                        <i class="fa fa-line-chart text-2xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-gray-400 text-sm">成功率</p>
+                        <p id="successRate" class="text-2xl font-bold">0%</p>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-                <div class="mb-6">
-                    <div class="flex items-center justify-between mb-1 flex-col sm:flex-row gap-2">
-                        <label for="outputItem" class="block text-sm font-medium text-gray-400">产出物品</label>
-                        <div class="flex items-center">
-                            <input type="checkbox" id="noOutputItem" class="mr-2">
-                            <label for="noOutputItem" class="text-sm text-gray-400">暂不添加产物</label>
+        <!-- 图表区域 -->
+        <div id="chartsSection" class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8 hidden">
+            <div class="glass-effect rounded-lg p-6">
+                <h3 class="text-lg font-semibold mb-4">收益趋势</h3>
+                <div class="h-48 md:h-64">
+                    <canvas id="profitChart"></canvas>
+                </div>
+            </div>
+            <div class="glass-effect rounded-lg p-6 hidden md:block">
+                <h3 class="text-lg font-semibold mb-4">合同类型分布</h3>
+                <div class="h-64">
+                    <canvas id="contractTypeChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- 合同列表 -->
+        <div id="contractsSection" class="glass-effect rounded-lg overflow-hidden hidden">
+            <div class="px-4 sm:px-6 py-4 border-b border-gray-800">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <h2 class="text-xl font-bold whitespace-nowrap">合同列表</h2>
+                    <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 w-full sm:w-auto">
+                        <div class="relative w-full sm:w-auto">
+                            <input type="text" id="searchInput" placeholder="搜索合同..." class="input-field pr-10 w-full">
+                            <i class="fa fa-search absolute right-3 top-3 text-gray-500"></i>
                         </div>
-                    </div>
-                    <div id="outputItemContainer" class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 bg-gray-900 bg-opacity-50 p-3 rounded-lg">
-                        <input type="text" id="outputItem" class="input-field flex-1" placeholder="物品名称" required>
-                        <select id="outputWear" class="input-field w-full sm:w-24" required>
-                            <option value="factoryNew">崭新出厂</option>
-                            <option value="minimalWear">略有磨损</option>
-                            <option value="fieldTested" selected>久经沙场</option>
-                            <option value="wellWorn">破损不堪</option>
-                            <option value="battleScarred">战痕累累</option>
+                        <select id="filterSelect" class="input-field w-full sm:w-auto">
+                            <option value="all">全部合同</option>
+                            <option value="completed">已完成</option>
+                            <option value="cooling">冷却中</option>
+                            <option value="profitable">盈利</option>
+                            <option value="loss">亏损</option>
                         </select>
-                        <input type="number" id="outputWearValue" class="input-field w-full sm:w-32" placeholder="明细磨损" step="0.0000000000000001" min="0" max="1" title="输入具体的磨损值，例如: 0.2222221213132456">
-                        <input type="number" id="outputPrice" class="input-field w-full sm:w-24" placeholder="单价" step="0.01" min="0" required>
                     </div>
                 </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                    <div>
-                        <label for="completionDate" class="block text-sm font-medium text-gray-400 mb-1">合同开始时间 (可选，默认为当前时间)</label>
-                        <input type="datetime-local" id="completionDate" class="input-field w-full">
-                    </div>
-                    <div>
-                        <label for="coolingPeriod" class="block text-sm font-medium text-gray-400 mb-1">冷却时间 (天)</label>
-                        <input type="number" id="coolingPeriod" class="input-field w-full" min="0" value="7">
-                    </div>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-800">
+                    <thead class="bg-gray-900">
+                    <tr>
+                        <th scope="col" class="table-header">ID</th>
+                        <th scope="col" class="table-header m:table-cell">产出物品</th>
+                        <th scope="col" class="table-header sm:table-cell">成本</th>
+                        <th scope="col" class="table-header sm:table-cell">收益</th>
+                        <th scope="col" class="table-header">开始时间</th>
+                        <th scope="col" class="table-header">预计完成时间</th>
+                        <th scope="col" class="table-header sm:table-cell">投入物品</th>
+                        <th scope="col" class="table-header">利润</th>
+                        <th scope="col" class="table-header">状态</th>
+                        <th scope="col" class="table-header">冷却时间</th>
+                        <th scope="col" class="table-header md:table-cell">合同类型</th>
+                        <th scope="col" class="table-header">操作</th>
+                    </tr>
+                    </thead>
+                    <tbody id="contractTableBody" class="bg-dark divide-y divide-gray-800">
+                    <!-- 合同数据将通过JavaScript动态填充 -->
+                    <tr>
+                        <td colspan="12" class="table-cell text-center">暂无合同数据，请添加新合同</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div id="pagination" class="px-6 py-4 border-t border-gray-800 flex justify-between items-center">
+                <div class="text-sm text-gray-400">
+                    显示 <span id="showingRange">0-0</span> 条，共 <span id="totalItems">0</span> 条
                 </div>
+                <div class="flex space-x-2">
+                    <button id="prevPageBtn" class="btn-outline py-1 px-3 disabled:opacity-50 disabled:cursor-not-allowed">
+                        <i class="fa fa-chevron-left"></i>
+                    </button>
+                    <button id="nextPageBtn" class="btn-outline py-1 px-3 disabled:opacity-50 disabled:cursor-not-allowed">
+                        <i class="fa fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
 
+    <!-- 页脚 -->
+    <footer class="glass-effect border-t border-gray-800 py-6">
+        <div class="container mx-auto px-4 text-center text-gray-500 text-sm">
+            <p>CS2 汰换合同追踪器 &copy; 2026 | 仅供游戏辅助使用</p>
+        </div>
+    </footer>
+</div>
+
+    <!-- 登录模态框 -->
+    <div id="loginModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
+        <div class="glass-effect rounded-lg p-6 w-full max-w-md">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-bold">用户登录</h2>
+                <button class="close-modal-btn text-gray-400 hover:text-white">
+                    <i class="fa fa-times text-xl"></i>
+                </button>
+            </div>
+            <form id="loginForm">
+                <div class="mb-4">
+                    <label for="loginUsername" class="block text-sm font-medium text-gray-400 mb-1">用户名/邮箱</label>
+                    <input type="text" id="loginUsername" class="input-field w-full" placeholder="请输入用户名或邮箱" required>
+                </div>
                 <div class="mb-6">
-                    <label for="notes" class="block text-sm font-medium text-gray-400 mb-1">备注</label>
-                    <textarea id="notes" class="input-field w-full" rows="3" placeholder="添加备注..."></textarea>
+                    <label for="loginPassword" class="block text-sm font-medium text-gray-400 mb-1">密码</label>
+                    <input type="password" id="loginPassword" class="input-field w-full" placeholder="请输入密码" required>
                 </div>
-
-                <div class="flex justify-end space-x-4">
-                    <button type="button" id="cancelBtn" class="btn-outline">取消</button>
-                    <button type="submit" class="btn-primary">保存合同</button>
+                <div class="mb-6">
+                    <label for="loginPassword" class="block text-sm font-medium text-gray-400 mb-1">host</label>
+                    <input type="password" id="host" class="input-field w-full" placeholder="请输入" required>
+                </div>
+                <div class="flex justify-between items-center mb-6">
+                    <div class="flex items-center">
+                        <input type="checkbox" id="rememberMe" class="mr-2">
+                        <label for="rememberMe" class="text-sm text-gray-400">记住我</label>
+                    </div>
+                    <a href="#" class="text-sm text-cs2-accent hover:underline">忘记密码？</a>
+                </div>
+                <button type="submit" class="btn-primary w-full">
+                    <i class="fa fa-sign-in mr-2"></i> 登录
+                </button>
+                <div class="mt-4 text-center">
+                    <span class="text-gray-400">还没有账号？</span>
+                    <button type="button" id="switchToRegisterBtn" class="text-cs2-accent hover:underline ml-1">立即注册</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- 确认对话框 -->
-    <div id="confirmDialog" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
+    <!-- 注册模态框 -->
+    <div id="registerModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
         <div class="glass-effect rounded-lg p-6 w-full max-w-md">
-            <h3 id="confirmTitle" class="text-xl font-bold mb-4">确认操作</h3>
-            <p id="confirmMessage" class="mb-6">您确定要执行此操作吗？</p>
-            <div class="flex justify-end space-x-4">
-                <button id="confirmCancelBtn" class="btn-outline">取消</button>
-                <button id="confirmOkBtn" class="btn-primary">确认</button>
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-bold">用户注册</h2>
+                <button class="close-modal-btn text-gray-400 hover:text-white">
+                    <i class="fa fa-times text-xl"></i>
+                </button>
             </div>
+            <form id="registerForm">
+                <div class="mb-4">
+                    <label for="registerUsername" class="block text-sm font-medium text-gray-400 mb-1">用户名</label>
+                    <input type="text" id="registerUsername" class="input-field w-full" placeholder="请输入用户名（3-50个字符）" required minlength="3" maxlength="50">
+                </div>
+                <div class="mb-4">
+                    <label for="registerEmail" class="block text-sm font-medium text-gray-400 mb-1">邮箱</label>
+                    <input type="email" id="registerEmail" class="input-field w-full" placeholder="请输入邮箱" required>
+                </div>
+                <div class="mb-4">
+                    <label for="registerPassword" class="block text-sm font-medium text-gray-400 mb-1">密码</label>
+                    <input type="password" id="registerPassword" class="input-field w-full" placeholder="请输入密码（至少6个字符）" required minlength="6">
+                </div>
+                <div class="mb-6">
+                    <label for="registerConfirmPassword" class="block text-sm font-medium text-gray-400 mb-1">确认密码</label>
+                    <input type="password" id="registerConfirmPassword" class="input-field w-full" placeholder="请再次输入密码" required>
+                </div>
+                <button type="submit" class="btn-primary w-full">
+                    <i class="fa fa-user-plus mr-2"></i> 注册
+                </button>
+                <div class="mt-4 text-center">
+                    <span class="text-gray-400">已有账号？</span>
+                    <button type="button" id="switchToLoginBtn" class="text-cs2-accent hover:underline ml-1">立即登录</button>
+                </div>
+            </form>
         </div>
     </div>
-
-    <!-- 通知提示 -->
-    <div id="notification" class="fixed top-4 right-4 z-50 glass-effect rounded-lg p-4 shadow-lg transform translate-x-full transition-transform duration-300 max-w-sm">
-        <div class="flex items-start">
-            <div id="notificationIcon" class="mr-3 text-lg"></div>
-            <div class="flex-1">
-                <h4 id="notificationTitle" class="font-bold"></h4>
-                <p id="notificationMessage" class="text-sm text-gray-400"></p>
-            </div>
-            <button id="closeNotificationBtn" class="text-gray-400 hover:text-white ml-4">
-                <i class="fa fa-times"></i>
+<!-- 新增/编辑合同模态框 -->
+<div id="contractModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
+    <div class="glass-effect rounded-lg p-4 sm:p-6 w-full max-w-4xl max-h-[90vh] overflow-y-auto scrollbar-thin scrollbar-thumb-cs2-accent scrollbar-track-gray-800 text-sm">
+        <div class="flex justify-between items-center mb-6">
+            <h2 id="modalTitle" class="text-xl font-bold">新增合同</h2>
+            <button id="closeModalBtn" class="text-gray-400 hover:text-white">
+                <i class="fa fa-times text-xl"></i>
             </button>
         </div>
-    </div>
+        <form id="contractForm">
+            <input type="hidden" id="contractId">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+                <div>
+                    <label for="contractType" class="block text-sm font-medium text-gray-400 mb-1">合同类型</label>
+                    <select id="contractType" class="input-field w-full" required>
+                        <option value="tenToOne">十合一</option>
+                        <option value="fiveToOne">五合一</option>
+                        <option value="other">其他</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="status" class="block text-sm font-medium text-gray-400 mb-1">状态</label>
+                    <select id="status" class="input-field w-full" required>
+                        <option value="completed">已完成</option>
+                        <option value="cooling">冷却中</option>
+                    </select>
+                </div>
+            </div>
 
-    <!-- JavaScript -->
-    <script>
+            <div class="mb-6">
+                <label class="block text-sm font-medium text-gray-400 mb-1">投入物品</label>
+                <div id="inputItemsContainer" class="space-y-4">
+                    <!-- 投入物品将通过JavaScript动态添加 -->
+                    <div class="input-item flex flex-col sm:flex-row items-stretch sm:items-center gap-4 sm:gap-3 p-4 bg-gray-900 bg-opacity-50 rounded-lg">
+                        <input type="text" class="input-field flex-1 mb-4 sm:mb-0" placeholder="物品名称" required>
+                        <div class="flex gap-2 sm:gap-3 w-full sm:w-auto">
+                            <input type="number" class="input-field w-full sm:w-24 mb-4 sm:mb-0" placeholder="数量" min="1" value="1" required>
+                            <input type="number" class="input-field w-full sm:w-24 mb-4 sm:mb-0" placeholder="单价" step="0.01" min="0" required>
+                            <button type="button" class="remove-item-btn text-danger hover:text-red-400 px-2 flex items-center justify-center">
+                                <i class="fa fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <button type="button" id="addInputItemBtn" class="btn-outline mt-3 py-1 px-3 text-sm w-full sm:w-auto">
+                    <i class="fa fa-plus mr-1"></i> 添加物品
+                </button>
+            </div>
+
+            <div class="mb-6">
+                <div class="flex items-center justify-between mb-1 flex-col sm:flex-row gap-2">
+                    <label for="outputItem" class="block text-sm font-medium text-gray-400">产出物品</label>
+                    <div class="flex items-center">
+                        <input type="checkbox" id="noOutputItem" class="mr-2">
+                        <label for="noOutputItem" class="text-sm text-gray-400">暂不添加产物</label>
+                    </div>
+                </div>
+                <div id="outputItemContainer" class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 bg-gray-900 bg-opacity-50 p-3 rounded-lg">
+                    <input type="text" id="outputItem" class="input-field flex-1" placeholder="物品名称" required>
+                    <select id="outputWear" class="input-field w-full sm:w-24" required>
+                        <option value="factoryNew">崭新出厂</option>
+                        <option value="minimalWear">略有磨损</option>
+                        <option value="fieldTested" selected>久经沙场</option>
+                        <option value="wellWorn">破损不堪</option>
+                        <option value="battleScarred">战痕累累</option>
+                    </select>
+                    <input type="number" id="outputWearValue" class="input-field w-full sm:w-32" placeholder="明细磨损" step="0.0000000000000001" min="0" max="1" title="输入具体的磨损值，例如: 0.2222221213132456">
+                    <input type="number" id="outputPrice" class="input-field w-full sm:w-24" placeholder="单价" step="0.01" min="0" required>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div>
+                    <label for="completionDate" class="block text-sm font-medium text-gray-400 mb-1">合同开始时间 (可选，默认为当前时间)</label>
+                    <input type="datetime-local" id="completionDate" class="input-field w-full">
+                </div>
+                <div>
+                    <label for="coolingPeriod" class="block text-sm font-medium text-gray-400 mb-1">冷却时间 (天)</label>
+                    <input type="number" id="coolingPeriod" class="input-field w-full" min="0" value="7">
+                </div>
+            </div>
+
+            <div class="mb-6">
+                <label for="notes" class="block text-sm font-medium text-gray-400 mb-1">备注</label>
+                <textarea id="notes" class="input-field w-full" rows="3" placeholder="添加备注..."></textarea>
+            </div>
+
+            <div class="flex justify-end space-x-4">
+                <button type="button" id="cancelBtn" class="btn-outline">取消</button>
+                <button type="submit" class="btn-primary">保存合同</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- 确认对话框 -->
+<div id="confirmDialog" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
+    <div class="glass-effect rounded-lg p-6 w-full max-w-md">
+        <h3 id="confirmTitle" class="text-xl font-bold mb-4">确认操作</h3>
+        <p id="confirmMessage" class="mb-6">您确定要执行此操作吗？</p>
+        <div class="flex justify-end space-x-4">
+            <button id="confirmCancelBtn" class="btn-outline">取消</button>
+            <button id="confirmOkBtn" class="btn-primary">确认</button>
+        </div>
+    </div>
+</div>
+
+<!-- 通知提示 -->
+<div id="notification" class="fixed top-4 right-4 z-50 glass-effect rounded-lg p-4 shadow-lg transform translate-x-full transition-transform duration-300 max-w-sm">
+    <div class="flex items-start">
+        <div id="notificationIcon" class="mr-3 text-lg"></div>
+        <div class="flex-1">
+            <h4 id="notificationTitle" class="font-bold"></h4>
+            <p id="notificationMessage" class="text-sm text-gray-400"></p>
+        </div>
+        <button id="closeNotificationBtn" class="text-gray-400 hover:text-white ml-4">
+            <i class="fa fa-times"></i>
+        </button>
+    </div>
+</div>
+
+<!-- JavaScript -->
+<script>
         // 全局变量
-        let db;
         let contracts = [];
         let filteredContracts = [];
         let currentPage = 1;
@@ -463,76 +567,186 @@
         let currentConfirmAction = null;
         let profitChart = null;
         let contractTypeChart = null;
+        let authTokens = {
+            accessToken: '',
+            refreshToken: ''
+        };
+        let currentUser = null;
+
+        // API配置
+        let API_BASE_URL = `http://${localStorage.getItem("host") || 'localhost'}:3000/api`;
+        const API_ENDPOINTS = {
+            auth: {
+                register: '/auth/register',
+                login: '/auth/login',
+                me: '/auth/me',
+                refresh: '/auth/refresh',
+                logout: '/auth/logout',
+                changePassword: '/auth/change-password'
+            },
+            contracts: {
+                list: '/contracts',
+                create: '/contracts',
+                get: (id) => `/contracts/${id}`,
+                update: (id) => `/contracts/${id}`,
+                delete: (id) => `/contracts/${id}`,
+                stats: {
+                    summary: '/contracts/stats/summary',
+                    monthly: '/contracts/stats/monthly'
+                }
+            }
+        };
 
         // DOM 加载完成后初始化
         document.addEventListener('DOMContentLoaded', () => {
-            initDatabase();
+            checkAuthStatus();
             setupEventListeners();
-            updateStatistics();
             initCharts();
-
-            // 设置默认日期时间为当前时间
-            const now = new Date();
-            const dateTimeString = now.toISOString().slice(0, 16);
-            document.getElementById('completionDate').value = dateTimeString;
         });
 
-        // 初始化 IndexedDB
-        function initDatabase() {
-            const request = indexedDB.open('CS2ContractTracker', 1);
+        // 检查认证状态
+        async function checkAuthStatus() {
+            try {
+                // 从本地存储获取令牌
+                const storedTokens = localStorage.getItem('authTokens');
+                const storedUser = localStorage.getItem('currentUser');
 
-            request.onerror = (event) => {
-                showNotification('错误', '无法打开数据库', 'error');
-                console.error('数据库打开失败:', event.target.error);
-            };
+                if (storedTokens && storedUser) {
+                    authTokens = JSON.parse(storedTokens);
+                    currentUser = JSON.parse(storedUser);
 
-            request.onupgradeneeded = (event) => {
-                db = event.target.result;
+                    // 验证令牌是否有效
+                    const isValid = await validateToken();
+                    if (isValid) {
+                        updateUIForAuthenticatedUser();
+                        loadContracts();
+                        return;
+                    }
+                }
 
-                // 创建合同对象存储
-                const contractStore = db.createObjectStore('contracts', { keyPath: 'id', autoIncrement: true });
-
-                // 创建索引
-                contractStore.createIndex('by_completion_date', 'completionDate', { unique: false });
-                contractStore.createIndex('by_status', 'status', { unique: false });
-                contractStore.createIndex('by_profit', 'profit', { unique: false });
-
-                console.log('数据库升级完成');
-            };
-
-            request.onsuccess = (event) => {
-                db = event.target.result;
-                console.log('数据库连接成功');
-                loadContracts();
-            };
+                // 未登录状态
+                updateUIForUnauthenticatedUser();
+            } catch (error) {
+                console.error('检查认证状态失败:', error);
+                updateUIForUnauthenticatedUser();
+            }
         }
 
-        // 加载合同数据
-        function loadContracts() {
-            const transaction = db.transaction(['contracts'], 'readonly');
-            const store = transaction.objectStore('contracts');
-            const request = store.getAll();
+        // 验证令牌
+        async function validateToken() {
+            try {
+                const response = await fetch(`${API_BASE_URL}${API_ENDPOINTS.auth.me}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${authTokens.accessToken}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
 
-            request.onsuccess = (event) => {
-                contracts = event.target.result;
+                if (response.status === 401) {
+                    // 令牌过期，尝试刷新
+                    if (authTokens.refreshToken) {
+                        return await refreshToken();
+                    }
+                    return false;
+                }
 
-                // 按完成时间降序排序
-                contracts.sort((a, b) => new Date(b.completionDate) - new Date(a.completionDate));
+                if (!response.ok) {
+                    throw new Error('验证令牌失败');
+                }
 
-                filterAndDisplayContracts();
-                updateStatistics();
-                updateCharts();
-            };
+                const data = await response.json();
+                if (data.success) {
+                    currentUser = data.data.user;
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                    return true;
+                }
 
-            request.onerror = (event) => {
-                showNotification('错误', '加载合同数据失败', 'error');
-                console.error('加载合同数据失败:', event.target.error);
-            };
+                return false;
+            } catch (error) {
+                console.error('验证令牌错误:', error);
+                return false;
+            }
+        }
+
+        // 刷新令牌
+        async function refreshToken() {
+            try {
+                const response = await fetch(`${API_BASE_URL}${API_ENDPOINTS.auth.refresh}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        refreshToken: authTokens.refreshToken
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('刷新令牌失败');
+                }
+
+                const data = await response.json();
+                if (data.success) {
+                    authTokens.accessToken = data.data.accessToken;
+                    localStorage.setItem('authTokens', JSON.stringify(authTokens));
+                    return true;
+                }
+
+                return false;
+            } catch (error) {
+                console.error('刷新令牌错误:', error);
+                return false;
+            }
         }
 
         // 设置事件监听器
         function setupEventListeners() {
-            // 模态框相关
+            // 用户菜单交互
+            const userButton = document.getElementById('userButton');
+            const userMenu = document.getElementById('userMenu');
+
+            userButton.addEventListener('click', (event) => {
+                event.stopPropagation();
+                userMenu.classList.toggle('hidden');
+            });
+
+            userMenu.addEventListener('click', (event) => {
+                event.stopPropagation();
+            });
+
+            document.addEventListener('click', () => {
+                userMenu.classList.add('hidden');
+            });
+
+            // 登录注册相关
+            document.getElementById('loginBtn').addEventListener('click', () => openModal('loginModal'));
+            document.getElementById('registerBtn').addEventListener('click', () => openModal('registerModal'));
+            document.getElementById('logoutBtn').addEventListener('click', handleLogout);
+            document.getElementById('promptLoginBtn').addEventListener('click', () => openModal('loginModal'));
+            document.getElementById('promptRegisterBtn').addEventListener('click', () => openModal('registerModal'));
+            document.getElementById('switchToRegisterBtn').addEventListener('click', () => {
+                closeModal('loginModal');
+                openModal('registerModal');
+            });
+            document.getElementById('switchToLoginBtn').addEventListener('click', () => {
+                closeModal('registerModal');
+                openModal('loginModal');
+            });
+
+            // 登录表单提交
+            document.getElementById('loginForm').addEventListener('submit', async (event) => {
+                event.preventDefault();
+                await handleLogin();
+            });
+
+            // 注册表单提交
+            document.getElementById('registerForm').addEventListener('submit', async (event) => {
+                event.preventDefault();
+                await handleRegister();
+            });
+
+            // 合同相关
             document.getElementById('addContractBtn').addEventListener('click', () => {
                 openContractModal();
             });
@@ -545,10 +759,10 @@
                 closeContractModal();
             });
 
-            // 表单提交
-            document.getElementById('contractForm').addEventListener('submit', (event) => {
+            // 合同表单提交
+            document.getElementById('contractForm').addEventListener('submit', async (event) => {
                 event.preventDefault();
-                saveContract();
+                await saveContract();
             });
 
             // 添加投入物品
@@ -602,47 +816,6 @@
                 }
             });
 
-            // 设置菜单交互
-            const settingsButton = document.getElementById('settingsButton');
-            const settingsMenu = document.getElementById('settingsMenu');
-            const settingsDropdown = document.getElementById('settingsDropdown');
-
-            // 点击设置按钮切换菜单显示状态
-            settingsButton.addEventListener('click', (event) => {
-                event.stopPropagation();
-                settingsMenu.classList.toggle('hidden');
-            });
-
-            // 点击菜单项时不关闭菜单
-            settingsMenu.addEventListener('click', (event) => {
-                event.stopPropagation();
-            });
-
-            // 点击页面其他地方关闭菜单
-            document.addEventListener('click', () => {
-                settingsMenu.classList.add('hidden');
-            });
-
-            // 数据导入导出
-            document.getElementById('exportDataBtn').addEventListener('click', () => {
-                exportData();
-                settingsMenu.classList.add('hidden'); // 执行操作后关闭菜单
-            });
-
-            document.getElementById('importDataBtn').addEventListener('click', () => {
-                document.getElementById('importFileInput').click();
-                settingsMenu.classList.add('hidden'); // 执行操作后关闭菜单
-            });
-
-            document.getElementById('importFileInput').addEventListener('change', (event) => {
-                importData(event.target.files[0]);
-            });
-
-            document.getElementById('clearDataBtn').addEventListener('click', () => {
-                showConfirmDialog('清除数据', '您确定要清除所有合同数据吗？此操作不可撤销。', 'clearData');
-                settingsMenu.classList.add('hidden'); // 执行操作后关闭菜单
-            });
-
             // 确认对话框
             document.getElementById('confirmCancelBtn').addEventListener('click', () => {
                 closeConfirmDialog();
@@ -656,6 +829,246 @@
             document.getElementById('closeNotificationBtn').addEventListener('click', () => {
                 closeNotification();
             });
+
+            // 关闭模态框按钮
+            document.querySelectorAll('.close-modal-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.fixed.inset-0.bg-black.bg-opacity-50').forEach(modal => {
+                        modal.classList.add('hidden');
+                    });
+                });
+            });
+        }
+
+        // 处理登录
+        async function handleLogin() {
+            try {
+                const username = document.getElementById('loginUsername').value;
+                const password = document.getElementById('loginPassword').value;
+                const host = document.getElementById('host').value;
+                if (document.getElementById('rememberMe').value) {
+                    localStorage.setItem('host', host);
+                    localStorage.setItem('username', username);
+                    localStorage.setItem('password', password);
+                }
+                API_BASE_URL = `${API_BASE_URL.replace('localhost', host)}`;
+                const response = await fetch(`${API_BASE_URL}${API_ENDPOINTS.auth.login}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        username,
+                        password
+                    })
+                });
+
+                const data = await response.json();
+
+                if (!data.success) {
+                    showNotification('登录失败', data.message || '用户名或密码错误', 'error');
+                    return;
+                }
+
+                // 保存令牌和用户信息
+                authTokens = {
+                    accessToken: data.data.accessToken,
+                    refreshToken: data.data.refreshToken
+                };
+                currentUser = data.data.user;
+
+                localStorage.setItem('authTokens', JSON.stringify(authTokens));
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+
+                closeModal('loginModal');
+                showNotification('登录成功', `欢迎回来，${currentUser.nickname || currentUser.username}！`, 'success');
+                updateUIForAuthenticatedUser();
+                loadContracts();
+
+            } catch (error) {
+                console.error('登录错误:', error);
+                showNotification('登录失败', '服务器错误，请稍后重试', 'error');
+            }
+        }
+
+        // 处理注册
+        async function handleRegister() {
+            try {
+                const username = document.getElementById('registerUsername').value;
+                const email = document.getElementById('registerEmail').value;
+                const password = document.getElementById('registerPassword').value;
+                const confirmPassword = document.getElementById('registerConfirmPassword').value;
+
+                // 验证密码
+                if (password !== confirmPassword) {
+                    showNotification('注册失败', '两次输入的密码不一致', 'error');
+                    return;
+                }
+
+                const response = await fetch(`${API_BASE_URL}${API_ENDPOINTS.auth.register}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        username,
+                        email,
+                        password,
+                        nickname: username
+                    })
+                });
+
+                const data = await response.json();
+
+                if (!data.success) {
+                    showNotification('注册失败', data.message || '注册失败，请稍后重试', 'error');
+                    return;
+                }
+
+                closeModal('registerModal');
+                showNotification('注册成功', '账号创建成功，请登录', 'success');
+
+                // 切换到登录页面
+                openModal('loginModal');
+
+            } catch (error) {
+                console.error('注册错误:', error);
+                showNotification('注册失败', '服务器错误，请稍后重试', 'error');
+            }
+        }
+
+        // 处理登出
+        async function handleLogout() {
+            try {
+                // 调用登出API（可选）
+                await fetch(`${API_BASE_URL}${API_ENDPOINTS.auth.logout}`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${authTokens.accessToken}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                // 清除本地存储
+                localStorage.removeItem('authTokens');
+                localStorage.removeItem('currentUser');
+                authTokens = { accessToken: '', refreshToken: '' };
+                currentUser = null;
+
+                showNotification('登出成功', '您已成功登出', 'success');
+                updateUIForUnauthenticatedUser();
+
+            } catch (error) {
+                console.error('登出错误:', error);
+                // 即使API调用失败，也要清除本地存储
+                localStorage.removeItem('authTokens');
+                localStorage.removeItem('currentUser');
+                authTokens = { accessToken: '', refreshToken: '' };
+                currentUser = null;
+                updateUIForUnauthenticatedUser();
+            }
+        }
+
+        // 更新已登录用户的UI
+        function updateUIForAuthenticatedUser() {
+            // 更新用户信息
+            document.getElementById('userName').textContent = currentUser.nickname || currentUser.username;
+
+            // 更新用户菜单
+            document.getElementById('loginBtn').classList.add('hidden');
+            document.getElementById('registerBtn').classList.add('hidden');
+            document.getElementById('profileBtn').classList.remove('hidden');
+            document.getElementById('changePasswordBtn').classList.remove('hidden');
+            document.getElementById('logoutBtn').classList.remove('hidden');
+
+            // 显示主要功能区域
+            document.getElementById('loginPrompt').classList.add('hidden');
+            document.getElementById('statisticsSection').classList.remove('hidden');
+            document.getElementById('chartsSection').classList.remove('hidden');
+            document.getElementById('contractsSection').classList.remove('hidden');
+
+            // 启用新增合同按钮
+            document.getElementById('addContractBtn').disabled = false;
+        }
+
+        // 更新未登录用户的UI
+        function updateUIForUnauthenticatedUser() {
+            // 更新用户信息
+            document.getElementById('userName').textContent = '未登录';
+
+            // 更新用户菜单
+            document.getElementById('loginBtn').classList.remove('hidden');
+            document.getElementById('registerBtn').classList.remove('hidden');
+            document.getElementById('profileBtn').classList.add('hidden');
+            document.getElementById('changePasswordBtn').classList.add('hidden');
+            document.getElementById('logoutBtn').classList.add('hidden');
+
+            // 显示登录提示
+            document.getElementById('loginPrompt').classList.remove('hidden');
+            document.getElementById('statisticsSection').classList.add('hidden');
+            document.getElementById('chartsSection').classList.add('hidden');
+            document.getElementById('contractsSection').classList.add('hidden');
+
+            // 禁用新增合同按钮
+            document.getElementById('addContractBtn').disabled = true;
+        }
+
+        // 加载合同数据
+        async function loadContracts() {
+            try {
+                const response = await fetch(`${API_BASE_URL}${API_ENDPOINTS.contracts.list}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${authTokens.accessToken}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('加载合同失败');
+                }
+
+                const data = await response.json();
+
+                if (data.success) {
+                    contracts = data.data.contracts || [];
+
+                    // 转换日期格式
+                    contracts.forEach(contract => {
+                        if (contract.start_date) {
+                            contract.completionDate = new Date(contract.start_date).toISOString();
+                        }
+                        if (contract.input_items) {
+                            contract.inputItems = JSON.parse(contract.input_items);
+                        }
+                        if (contract.output_items) {
+                            contract.outputItem = JSON.parse(contract.output_items);
+                        }
+                        if (contract.notes) {
+                            contract.notes = JSON.parse(contract.notes);
+                        }
+                        if (contract.cooling_period) {
+                            contract.coolingPeriod = contract.cooling_period;
+                        }
+                        if (contract.completion_date) {
+                            contract.completionDate = contract.completion_date;
+                        }
+                        if (contract.contract_type) {
+                            contract.contractType = contract.contract_type;
+                        }
+                    });
+
+                    // 按完成时间降序排序
+                    contracts.sort((a, b) => new Date(b.completionDate) - new Date(a.completionDate));
+
+                    filterAndDisplayContracts();
+                    updateStatistics();
+                    updateCharts();
+                }
+            } catch (error) {
+                console.error('加载合同错误:', error);
+                showNotification('加载失败', '无法加载合同数据', 'error');
+            }
         }
 
         // 打开合同模态框
@@ -675,7 +1088,7 @@
 
             // 设置默认日期时间为当前时间
             const now = new Date();
-            const dateTimeString = now.toISOString().slice(0, 16);
+            const dateTimeString = formatDate(now).slice(0, 16);
             document.getElementById('completionDate').value = dateTimeString;
 
             if (contractId) {
@@ -824,116 +1237,141 @@
         }
 
         // 保存合同
-        function saveContract() {
-            const form = document.getElementById('contractForm');
+        async function saveContract() {
+            try {
+                const form = document.getElementById('contractForm');
 
-            // 验证表单
-            if (!form.checkValidity()) {
-                form.reportValidity();
-                return;
-            }
+                // 验证表单
+                if (!form.checkValidity()) {
+                    form.reportValidity();
+                    return;
+                }
 
-            // 收集投入物品数据
-            const inputItems = [];
-            const inputItemDivs = document.querySelectorAll('.input-item');
+                // 收集投入物品数据
+                const inputItems = [];
+                const inputItemDivs = document.querySelectorAll('.input-item');
 
-            inputItemDivs.forEach(div => {
-                const inputs = div.querySelectorAll('input');
-                const select = div.querySelector('.wear-select');
-                inputItems.push({
-                    name: inputs[0].value.trim(),
-                    wear: select.value,
-                    wearValue: inputs[1].value ? parseFloat(inputs[1].value) : null,
-                    price: parseFloat(inputs[2].value)
+                inputItemDivs.forEach(div => {
+                    const inputs = div.querySelectorAll('input');
+                    const select = div.querySelector('.wear-select');
+                    inputItems.push({
+                        name: inputs[0].value.trim(),
+                        wear: select.value,
+                        wearValue: inputs[1].value ? parseFloat(inputs[1].value) : null,
+                        price: parseFloat(inputs[2].value)
+                    });
                 });
-            });
 
-            // 计算成本
-            const cost = inputItems.reduce((total, item) => total + item.price, 0);
+                // 计算成本
+                const cost = inputItems.reduce((total, item) => total + item.price, 0);
 
-            // 检查是否暂不添加产物
-            const noOutputItem = document.getElementById('noOutputItem').checked;
-            let outputItem = {};
-            let revenue = 0;
+                // 检查是否暂不添加产物
+                const noOutputItem = document.getElementById('noOutputItem').checked;
+                let outputItem = {};
+                let revenue = 0;
 
-            if (noOutputItem) {
-                // 暂不添加产物
-                outputItem = {
-                    name: '',
-                    wear: 'fieldTested',
-                    wearValue: null,
-                    price: 0
+                if (noOutputItem) {
+                    // 暂不添加产物
+                    outputItem = {
+                        name: '',
+                        wear: 'fieldTested',
+                        wearValue: null,
+                        price: 0
+                    };
+                    revenue = 0;
+                } else {
+                    // 收集产出物品数据
+                    outputItem = {
+                        name: document.getElementById('outputItem').value.trim(),
+                        wear: document.getElementById('outputWear').value,
+                        wearValue: document.getElementById('outputWearValue').value ? parseFloat(document.getElementById('outputWearValue').value) : null,
+                        price: parseFloat(document.getElementById('outputPrice').value)
+                    };
+                    revenue = outputItem.price;
+                }
+
+                // 计算利润
+                const profit = revenue - cost;
+                let contract_type = document.getElementById('contractType').value;
+                // 创建合同对象
+                const contractData = {
+                    contract_type,
+                    inputItems,
+                    outputItems: outputItem,
+                    status: document.getElementById('status').value,
+                    startDate: document.getElementById('completionDate').value ? formatDate(new Date(document.getElementById('completionDate').value)) : formatDate(new Date()),
+                    endDate: null,
+                    cost,
+                    revenue,
+                    profit,
+                    notes: document.getElementById('notes').value.trim()
                 };
-                revenue = 0;
-            } else {
-                // 收集产出物品数据
-                outputItem = {
-                    name: document.getElementById('outputItem').value.trim(),
-                    wear: document.getElementById('outputWear').value,
-                    wearValue: document.getElementById('outputWearValue').value ? parseFloat(document.getElementById('outputWearValue').value) : null,
-                    price: parseFloat(document.getElementById('outputPrice').value)
-                };
-                revenue = outputItem.price;
-            }
 
-            // 计算利润
-            const profit = revenue - cost;
+                let response;
+                let endpoint;
+                let method;
 
-            // 创建合同对象
-            const contract = {
-                contractType: document.getElementById('contractType').value,
-                inputItems,
-                outputItem,
-                cost,
-                revenue,
-                profit,
-                status: document.getElementById('status').value,
-                completionDate: document.getElementById('completionDate').value ? new Date(document.getElementById('completionDate').value).toISOString() : new Date().toISOString(),
-                coolingPeriod: parseInt(document.getElementById('coolingPeriod').value) || 7,
-                notes: document.getElementById('notes').value.trim()
-            };
+                if (currentContractId) {
+                    // 更新现有合同
+                    endpoint = API_ENDPOINTS.contracts.update(currentContractId);
+                    method = 'PUT';
+                } else {
+                    // 添加新合同
+                    endpoint = API_ENDPOINTS.contracts.create;
+                    method = 'POST';
+                }
 
-            // 保存到数据库
-            const transaction = db.transaction(['contracts'], 'readwrite');
-            const store = transaction.objectStore('contracts');
-            let request;
+                response = await fetch(`${API_BASE_URL}${endpoint}`, {
+                    method: method,
+                    headers: {
+                        'Authorization': `Bearer ${authTokens.accessToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(contractData)
+                });
 
-            if (currentContractId) {
-                // 更新现有合同
-                contract.id = parseInt(currentContractId);
-                request = store.put(contract);
-            } else {
-                // 添加新合同
-                request = store.add(contract);
-            }
+                const data = await response.json();
 
-            request.onsuccess = () => {
-                closeContractModal();
+                if (!data.success) {
+                    showNotification('错误', data.message || '保存合同失败', 'error');
+                    return;
+                }
+
+                closeModal('contractModal');
                 showNotification('成功', currentContractId ? '合同更新成功' : '合同添加成功', 'success');
                 loadContracts();
-            };
 
-            request.onerror = (event) => {
+            } catch (error) {
+                console.error('保存合同错误:', error);
                 showNotification('错误', '保存合同失败', 'error');
-                console.error('保存合同失败:', event.target.error);
-            };
+            }
         }
 
         // 删除合同
-        function deleteContract(contractId) {
-            const transaction = db.transaction(['contracts'], 'readwrite');
-            const store = transaction.objectStore('contracts');
-            const request = store.delete(contractId);
+        async function deleteContract(contractId) {
+            try {
+                const response = await fetch(`${API_BASE_URL}${API_ENDPOINTS.contracts.delete(contractId)}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${authTokens.accessToken}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
 
-            request.onsuccess = () => {
+                const data = await response.json();
+
+                if (!data.success) {
+                    showNotification('错误', data.message || '删除合同失败', 'error');
+                    return;
+                }
+
                 showNotification('成功', '合同已删除', 'success');
                 loadContracts();
-            };
 
-            request.onerror = (event) => {
+            } catch (error) {
+                console.error('删除合同错误:', error);
                 showNotification('错误', '删除合同失败', 'error');
-                console.error('删除合同失败:', event.target.error);
-            };
+            }
         }
 
         // 筛选和显示合同
@@ -1065,36 +1503,35 @@
 
                 // 投入物品显示（最多显示3个，其余用省略号）
                 let inputItemsDisplay = '';
-                if (contract.inputItems.length <= 2) {
+                if (contract.inputItems.length <= 3) {
                     inputItemsDisplay = contract.inputItems.map(item => {
                         const wearText = item.wearValue ? `${getWearText(item.wear)} ${item.wearValue}` : getWearText(item.wear);
                         return `${item.name} (${wearText} ¥${item.price.toFixed(2)})`;
                     }).join('<br>');
                 } else {
-                    inputItemsDisplay = contract.inputItems.slice(0, 2).map(item => {
+                    inputItemsDisplay = contract.inputItems.slice(0, 3).map(item => {
                         const wearText = item.wearValue ? `${getWearText(item.wear)} ${item.wearValue}` : getWearText(item.wear);
                         return `${item.name} (${wearText} ¥${item.price.toFixed(2)})`;
                     }).join('<br>');
-                    inputItemsDisplay += `<br>...等${contract.inputItems.length - 2}项`;
+                    inputItemsDisplay += `<br>...等${contract.inputItems.length - 3}项`;
                 }
-
                 row.innerHTML = `
-                    <td class="table-cell">#${contract.id}</td>
+                    <td class="table-cell">#${contract.no}</td>
                     <td class="table-cell sm:table-cell">
-                        ${contract.outputItem.name ?
-                            `${contract.outputItem.name} (${contract.outputItem.wearValue ? `${getWearText(contract.outputItem.wear)} ${contract.outputItem.wearValue}` : getWearText(contract.outputItem.wear)} ¥${contract.outputItem.price.toFixed(2)})` :
-                            '<span class="text-gray-500">暂未添加</span>'
-                        }
+                        ${contract.outputItem && contract.outputItem.name ?
+                    `${contract.outputItem.name} (${contract.outputItem.wearValue ? `${getWearText(contract.outputItem.wear)} ${contract.outputItem.wearValue}` : getWearText(contract.outputItem.wear)} ¥${contract.outputItem.price.toFixed(2)})` :
+                    '<span class="text-gray-500">暂未添加</span>'
+                    }
                     </td>
-                    <td class="table-cell sm:table-cell">¥${contract.cost.toFixed(2)}</td>
-                    <td class="table-cell sm:table-cell">¥${contract.revenue.toFixed(2)}</td>
-                    <td class="table-cell ${profitClass} font-bold">${isActuallyCompleted ? `${profitSign}¥${displayProfit.toFixed(2)}` : '-'}</td>
-                    <td class="table-cell sm:table-cell">${inputItemsDisplay}</td>
-                    <td class="table-cell">${statusText}</td>
+                    <td class="table-cell sm:table-cell">¥${(+contract.cost).toFixed(2)}</td>
+                    <td class="table-cell sm:table-cell">¥${(+contract.revenue).toFixed(2)}</td>
                     <td class="table-cell">${formattedDate}</td>
                     <td class="table-cell">${formattedEndDate}</td>
-                    <td class="table-cell md:table-cell">${contractTypeText}</td>
+                    <td class="table-cell sm:table-cell">${inputItemsDisplay}</td>
+                    <td class="table-cell ${profitClass} font-bold">${isActuallyCompleted ? `${profitSign}¥${(+displayProfit).toFixed(2)}` : '-'}</td>
+                    <td class="table-cell">${statusText}</td>
                     <td class="table-cell">${contract.coolingPeriod} 天</td>
+                    <td class="table-cell md:table-cell">${contractTypeText}</td>
                     <td class="table-cell">
                         <div class="flex space-x-2">
                             <button class="edit-btn text-cs2-secondary hover:text-blue-400" data-id="${contract.id}">
@@ -1141,7 +1578,7 @@
             const isCoolingPeriodPassed = coolingEnd < new Date();
 
             // 没有产物或冷却期未过都算冷却中
-            return !contract.outputItem.name || !isCoolingPeriodPassed;
+            return !contract.outputItem || !contract.outputItem.name || !isCoolingPeriodPassed;
         }
 
         // 获取剩余冷却时间（天）
@@ -1151,16 +1588,29 @@
             const coolingEnd = new Date(completionDate.getTime() + (contract.coolingPeriod * 24 * 60 * 60 * 1000));
             const now = new Date();
 
+            // 如果没有产物，显示"待添加"
+            if (!contract.outputItem || !contract.outputItem.name) return '待添加';
+
             if (contract.outputItem.name && now >= coolingEnd) return 0;
 
-            // 如果没有产物，显示"待添加"
-            if (!contract.outputItem.name) return '待添加';
 
             // 计算剩余时间
             const remainingMs = coolingEnd - now;
             const remainingDays = Math.ceil(remainingMs / (1000 * 60 * 60 * 24));
 
             return remainingDays;
+        }
+
+        // 获取磨损文本
+        function getWearText(wear) {
+            const wearMap = {
+                'factoryNew': '崭新',
+                'minimalWear': '略有',
+                'fieldTested': '久经',
+                'wellWorn': '破损',
+                'battleScarred': '战痕'
+            };
+            return wearMap[wear] || '未知';
         }
 
         // 更新统计数据
@@ -1175,15 +1625,15 @@
 
             // 计算真正完成的合同（有产物且冷却期已过）
             const completedContracts = contracts.filter(contract => {
-                if (!contract.outputItem.name) return false;
+                if (!contract.outputItem || !contract.outputItem.name) return false;
                 const completionDate = new Date(contract.completionDate);
                 const coolingEnd = new Date(completionDate.getTime() + (contract.coolingPeriod * 24 * 60 * 60 * 1000));
                 return coolingEnd < new Date();
             });
 
             // 总收益（仅计算真正完成的合同）
-            const totalProfit = completedContracts.reduce((total, contract) => total + contract.profit, 0);
-            totalProfitEl.textContent = `¥${totalProfit.toFixed(2)}`;
+            const totalProfit = completedContracts.reduce((total, contract) => +total + +contract.profit, 0);
+            totalProfitEl.textContent = `¥${(+totalProfit).toFixed(2)}`;
 
             // 冷却中合同数
             const coolingCount = contracts.filter(contract => isContractCooling(contract)).length;
@@ -1311,7 +1761,7 @@
         function updateProfitChart() {
             // 筛选真正完成的合同（有产物且冷却期已过）
             const completedContracts = contracts.filter(contract => {
-                if (!contract.outputItem.name) return false;
+                if (!contract.outputItem || !contract.outputItem.name) return false;
                 const completionDate = new Date(contract.completionDate);
                 const coolingEnd = new Date(completionDate.getTime() + (contract.coolingPeriod * 24 * 60 * 60 * 1000));
                 return coolingEnd < new Date();
@@ -1321,7 +1771,7 @@
             const sortedContracts = [...completedContracts]
                 .sort((a, b) => new Date(a.completionDate) - new Date(b.completionDate))
                 .slice(-Math.min(30, completedContracts.length));
-
+            console.log(sortedContracts);
             // 只有在有完成的合同时才更新图表数据
             if (sortedContracts.length > 0) {
                 const labels = sortedContracts.map(contract => {
@@ -1332,8 +1782,8 @@
                 // 计算累计总收益
                 let cumulativeProfit = 0;
                 const data = sortedContracts.map(contract => {
-                    cumulativeProfit += contract.profit;
-                    return parseFloat(cumulativeProfit.toFixed(2));
+                    cumulativeProfit += +contract.profit;
+                    return parseFloat((+cumulativeProfit).toFixed(2));
                 });
 
                 profitChart.data.labels = labels;
@@ -1368,126 +1818,18 @@
             contractTypeChart.update();
         }
 
-        // 导出数据
-        function exportData() {
-            if (contracts.length === 0) {
-                showNotification('提示', '没有数据可导出', 'warning');
-                return;
+        // 打开模态框
+        function openModal(modalId) {
+            if (modalId === 'loginModal') {
+                document.getElementById('loginUsername').value = localStorage.getItem('username');
+                document.getElementById('loginPassword').value = localStorage.getItem('password');
             }
-
-            const dataStr = JSON.stringify(contracts, null, 2);
-            const dataBlob = new Blob([dataStr], { type: 'application/json' });
-
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(dataBlob);
-            link.download = `cs2-contracts-${new Date().toISOString().slice(0, 10)}.json`;
-            link.click();
-
-            showNotification('成功', '数据导出成功', 'success');
+            document.getElementById(modalId).classList.remove('hidden');
         }
 
-        // 导入数据
-        function importData(file) {
-            if (!file) return;
-
-            const reader = new FileReader();
-
-            reader.onload = (event) => {
-                try {
-                    const importedContracts = JSON.parse(event.target.result);
-
-                    if (!Array.isArray(importedContracts)) {
-                        throw new Error('无效的数据格式');
-                    }
-
-                    // 验证数据结构
-                    const validContracts = importedContracts.filter(contract => {
-                        return contract.hasOwnProperty('contractType') &&
-                               contract.hasOwnProperty('inputItems') &&
-                               Array.isArray(contract.inputItems) &&
-                               contract.hasOwnProperty('outputItem') &&
-                               contract.hasOwnProperty('cost') &&
-                               contract.hasOwnProperty('revenue') &&
-                               contract.hasOwnProperty('profit') &&
-                               contract.hasOwnProperty('status') &&
-                               contract.hasOwnProperty('completionDate');
-                    });
-
-                    if (validContracts.length === 0) {
-                        throw new Error('没有有效的合同数据');
-                    }
-
-                    // 询问是否合并或替换现有数据
-                    if (contracts.length > 0) {
-                        showConfirmDialog(
-                            '导入数据',
-                            `发现 ${validContracts.length} 个有效合同。是否替换现有数据？选择"取消"将合并数据。`,
-                            'importDataReplace',
-                            validContracts
-                        );
-                    } else {
-                        // 直接导入
-                        importContractsToDb(validContracts, true);
-                    }
-                } catch (error) {
-                    showNotification('错误', `导入失败: ${error.message}`, 'error');
-                    console.error('导入数据失败:', error);
-                }
-            };
-
-            reader.onerror = () => {
-                showNotification('错误', '读取文件失败', 'error');
-            };
-
-            reader.readAsText(file);
-        }
-
-        // 导入合同到数据库
-        function importContractsToDb(contractsToImport, replaceExisting = false) {
-            const transaction = db.transaction(['contracts'], 'readwrite');
-            const store = transaction.objectStore('contracts');
-
-            if (replaceExisting) {
-                // 清除现有数据
-                store.clear();
-            }
-
-            // 导入新数据（不保留原有ID）
-            contractsToImport.forEach(contract => {
-                delete contract.id;
-                store.add(contract);
-            });
-
-            transaction.oncomplete = () => {
-                showNotification('成功', `成功导入 ${contractsToImport.length} 个合同`, 'success');
-                loadContracts();
-            };
-
-            transaction.onerror = (event) => {
-                showNotification('错误', '导入数据失败', 'error');
-                console.error('导入数据失败:', event.target.error);
-            };
-        }
-
-        // 清除所有数据
-        function clearAllData() {
-            const transaction = db.transaction(['contracts'], 'readwrite');
-            const store = transaction.objectStore('contracts');
-            const request = store.clear();
-
-            request.onsuccess = () => {
-                showNotification('成功', '所有数据已清除', 'success');
-                contracts = [];
-                filteredContracts = [];
-                displayContracts();
-                updateStatistics();
-                updateCharts();
-            };
-
-            request.onerror = (event) => {
-                showNotification('错误', '清除数据失败', 'error');
-                console.error('清除数据失败:', event.target.error);
-            };
+        // 关闭模态框
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.add('hidden');
         }
 
         // 显示确认对话框
@@ -1520,15 +1862,6 @@
                 case 'deleteContract':
                     deleteContract(parseInt(data));
                     break;
-                case 'clearData':
-                    clearAllData();
-                    break;
-                case 'importDataReplace':
-                    importContractsToDb(data, true);
-                    break;
-                case 'importDataMerge':
-                    importContractsToDb(data, false);
-                    break;
             }
 
             closeConfirmDialog();
@@ -1560,7 +1893,6 @@
                     icon.className = 'mr-3 text-lg text-info';
             }
 
-            // 设置标题和消息
             titleEl.textContent = title;
             messageEl.textContent = message;
 
@@ -1568,8 +1900,7 @@
             notification.classList.remove('translate-x-full');
 
             // 3秒后自动关闭
-            clearTimeout(notification.timeout);
-            notification.timeout = setTimeout(() => {
+            setTimeout(() => {
                 closeNotification();
             }, 3000);
         }
@@ -1580,17 +1911,12 @@
             notification.classList.add('translate-x-full');
         }
 
-        // 获取磨损文本
-        function getWearText(wear) {
-            const wearMap = {
-                'factoryNew': '崭新出厂',
-                'minimalWear': '略有磨损',
-                'fieldTested': '久经沙场',
-                'wellWorn': '破损不堪',
-                'battleScarred': '战痕累累'
-            };
+        function padTo2Digits(num) {
+            return num.toString().padStart(2, '0');
+        }
 
-            return wearMap[wear] || '久经沙场';
+        function formatDate(date) {
+            return `${date.getFullYear()}-${padTo2Digits(date.getMonth() + 1)}-${padTo2Digits(date.getDate())} ${padTo2Digits(date.getHours())}:${padTo2Digits(date.getMinutes())}:${padTo2Digits(date.getSeconds())}`;
         }
     </script>
 </body>
